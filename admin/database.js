@@ -38,7 +38,13 @@ db.serialize(() => {
     )`);
     
     // Add published column if it doesn't exist (for existing databases)
-    db.run(`ALTER TABLE articles ADD COLUMN published INTEGER DEFAULT 1`);
+    // SQLite doesn't support IF NOT EXISTS for ALTER TABLE, so we catch the error
+    db.run(`ALTER TABLE articles ADD COLUMN published INTEGER DEFAULT 1`, (err) => {
+        // Ignore error if column already exists (SQLite error code 1 for duplicate column)
+        if (err && err.errno !== 1) {
+            console.error('Error adding published column:', err);
+        }
+    });
 
     // Media table for uploaded images
     db.run(`CREATE TABLE IF NOT EXISTS media (
