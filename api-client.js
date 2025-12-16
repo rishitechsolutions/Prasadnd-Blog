@@ -244,7 +244,16 @@
         const category = article.category || 'Article';
 
         // Get image URL - check multiple possible field names
-        const imageUrl = article.image || article.featured_image || article.image_url || 'assets/education.jpg';
+        // Handle both relative paths and absolute URLs
+        let imageUrl = article.image || article.featured_image || article.image_url || 'assets/education.jpg';
+        
+        // If it's a relative path starting with /uploads, make sure it's accessible
+        if (imageUrl.startsWith('/uploads/')) {
+            // Keep as is - it's already an absolute path from server root
+        } else if (!imageUrl.startsWith('http') && !imageUrl.startsWith('/') && !imageUrl.startsWith('assets/')) {
+            // If it doesn't start with http, /, or assets/, assume it's in assets/
+            imageUrl = `assets/${imageUrl}`;
+        }
 
         articleItem.innerHTML = `
             <div class="beyond-article-image">
