@@ -182,9 +182,12 @@
         }
 
         const articles = await fetchAPI('/api/public/articles');
-        if (articles && articles.length > 0) {
+        if (articles) {
             articlesCache = articles;
             renderArticles(articles);
+        } else {
+            // If API call failed, show empty state
+            renderArticles([]);
         }
     }
 
@@ -195,8 +198,14 @@
         const articlesGrid = document.querySelector('.beyond-articles-grid');
         if (!articlesGrid) return;
 
-        // Clear existing articles (except the first one which might be a template)
+        // Clear existing articles
         articlesGrid.innerHTML = '';
+
+        if (!articles || articles.length === 0) {
+            // Show a message if no articles
+            articlesGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 2rem;">No articles available yet. Check that articles are marked as "Published" in the admin dashboard.</p>';
+            return;
+        }
 
         articles.forEach((article, index) => {
             const articleElement = createArticleElement(article, index);
@@ -211,19 +220,31 @@
         const articleItem = document.createElement('article');
         articleItem.className = `beyond-article-item scroll-animate scroll-animate-delay-${index + 1}`;
 
-        // Format date
-        const date = article.created_at ? new Date(article.created_at) : new Date();
-        const formattedDate = date.toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric' 
-        });
+        // Format date - use article.date if available, otherwise use created_at
+        let formattedDate;
+        if (article.date) {
+            // If date is already formatted (e.g., "Dec 16, 2025"), use it directly
+            formattedDate = article.date;
+        } else if (article.created_at) {
+            const date = new Date(article.created_at);
+            formattedDate = date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        } else {
+            formattedDate = new Date().toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
 
         // Get category (default to article category or "Article")
         const category = article.category || 'Article';
 
-        // Get image URL
-        const imageUrl = article.featured_image || article.image_url || 'assets/education.jpg';
+        // Get image URL - check multiple possible field names
+        const imageUrl = article.image || article.featured_image || article.image_url || 'assets/education.jpg';
 
         articleItem.innerHTML = `
             <div class="beyond-article-image">
