@@ -2,6 +2,8 @@
 let currentSection = 'dashboard';
 let articles = [];
 let media = [];
+let pageEditor = null;
+let articleEditor = null;
 
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', () => {
@@ -47,6 +49,10 @@ function showSection(section) {
         pages: 'Pages',
         articles: 'Articles',
         media: 'Media Library',
+        'work-experience': 'Work Experience',
+        education: 'Education',
+        certifications: 'Certifications',
+        'contact-submissions': 'Contact Messages',
         settings: 'Settings'
     };
     document.getElementById('pageTitle').textContent = titles[section] || 'Dashboard';
@@ -60,6 +66,14 @@ function showSection(section) {
         initPageEditor();
     } else if (section === 'settings') {
         loadSettings();
+    } else if (section === 'work-experience') {
+        loadWorkExperience();
+    } else if (section === 'education') {
+        loadEducation();
+    } else if (section === 'certifications') {
+        loadCertifications();
+    } else if (section === 'contact-submissions') {
+        loadContactSubmissions();
     }
 }
 
@@ -120,6 +134,7 @@ function renderArticles() {
                         <th>Title</th>
                         <th>Category</th>
                         <th>Date</th>
+                        <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -129,6 +144,11 @@ function renderArticles() {
                             <td><strong>${article.title}</strong></td>
                             <td>${article.category}</td>
                             <td>${article.date}</td>
+                            <td>
+                                <span style="padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.85rem; background: ${article.published === 1 ? 'var(--primary-color)' : '#666'}; color: white;">
+                                    ${article.published === 1 ? 'Published' : 'Draft'}
+                                </span>
+                            </td>
                             <td>
                                 <button class="btn btn-sm btn-secondary" onclick="editArticle(${article.id})">Edit</button>
                                 <button class="btn btn-sm btn-danger" onclick="deleteArticle(${article.id})">Delete</button>
@@ -146,6 +166,24 @@ function showArticleForm(articleId = null) {
     const form = document.getElementById('articleForm');
     const title = document.getElementById('articleModalTitle');
     
+    // Initialize Quill editor for article content if not already initialized
+    const editorContainer = document.getElementById('articleContentEditor');
+    if (editorContainer && !articleEditor) {
+        articleEditor = new Quill('#articleContentEditor', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'color': [] }, { 'background': [] }],
+                    ['link', 'image'],
+                    ['clean']
+                ]
+            }
+        });
+    }
+    
     if (articleId) {
         const article = articles.find(a => a.id === articleId);
         if (article) {
@@ -154,18 +192,88 @@ function showArticleForm(articleId = null) {
             document.getElementById('articleTitle').value = article.title;
             document.getElementById('articleCategory').value = article.category;
             document.getElementById('articleDate').value = article.date;
-            document.getElementById('articleImage').value = article.image || '';
+            document.getElementById('articleImage').value = article.image || article.featured_image || '';
             document.getElementById('articleExcerpt').value = article.excerpt || '';
-            document.getElementById('articleContent').value = article.content || '';
+            if (articleEditor) {
+                articleEditor.root.innerHTML = article.content || '';
+            }
+            document.getElementById('articlePublished').checked = article.published !== 0;
+            
+            // Show preview if image exists
+            updateArticleImagePreview(article.image || article.featured_image || '');
         }
     } else {
         title.textContent = 'New Article';
         form.reset();
         document.getElementById('articleId').value = '';
+        document.getElementById('articlePublished').checked = true;
+        document.getElementById('articleImagePreview').style.display = 'none';
+        if (articleEditor) {
+            articleEditor.root.innerHTML = '';
+        }
     }
     
     modal.style.display = 'flex';
 }
+
+function updateArticleImagePreview(url) {
+    const preview = document.getElementById('articleImagePreview');
+    const img = document.getElementById('articleImagePreviewImg');
+    
+    if (url) {
+        // Handle both relative and absolute URLs
+        if (url.startsWith('http') || url.startsWith('//')) {
+            img.src = url;
+        } else if (url.startsWith('/')) {
+            img.src = url;
+        } else {
+            img.src = url.startsWith('assets/') ? url : `assets/${url}`;
+        }
+        preview.style.display = 'block';
+    } else {
+        preview.style.display = 'none';
+    }
+}
+
+async function handleArticleImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    if (!file.type.startsWith('image/')) {
+        showAlert('Please upload an image file', 'error');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+        const response = await fetch('/api/media/upload', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            const imageUrl = `/uploads/${data.filename}`;
+            document.getElementById('articleImage').value = imageUrl;
+            updateArticleImagePreview(imageUrl);
+            showAlert('Image uploaded successfully', 'success');
+        }
+    } catch (error) {
+        showAlert('Error uploading image', 'error');
+    }
+}
+
+// Update preview when image URL changes
+document.addEventListener('DOMContentLoaded', () => {
+    const imageInput = document.getElementById('articleImage');
+    if (imageInput) {
+        imageInput.addEventListener('input', (e) => {
+            updateArticleImagePreview(e.target.value);
+        });
+    }
+});
 
 function closeArticleForm() {
     document.getElementById('articleModal').style.display = 'none';
@@ -202,8 +310,10 @@ document.getElementById('articleForm').addEventListener('submit', async (e) => {
         category: document.getElementById('articleCategory').value,
         date: document.getElementById('articleDate').value,
         image: document.getElementById('articleImage').value,
+        featured_image: document.getElementById('articleImage').value, // Also set featured_image
         excerpt: document.getElementById('articleExcerpt').value,
-        content: document.getElementById('articleContent').value
+        content: articleEditor ? articleEditor.root.innerHTML : '',
+        published: document.getElementById('articlePublished').checked ? 1 : 0
     };
     
     try {
@@ -350,27 +460,50 @@ function formatFileSize(bytes) {
 
 // Page Editor
 function initPageEditor() {
-    const selector = document.getElementById('pageSelector');
-    selector.addEventListener('change', async (e) => {
-        const pageName = e.target.value;
-        if (pageName) {
-            try {
-                const response = await fetch(`/api/pages/${pageName}`);
-                const page = await response.json();
-                document.getElementById('pageContent').value = page.content || '';
-                document.getElementById('pageEditor').style.display = 'block';
-            } catch (error) {
-                showAlert('Error loading page', 'error');
+    // Initialize Quill editor for page content
+    const editorContainer = document.getElementById('pageContentEditor');
+    if (editorContainer && !pageEditor) {
+        pageEditor = new Quill('#pageContentEditor', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'color': [] }, { 'background': [] }],
+                    ['link', 'image'],
+                    ['clean']
+                ]
             }
-        } else {
-            document.getElementById('pageEditor').style.display = 'none';
-        }
-    });
+        });
+    }
+    
+    const selector = document.getElementById('pageSelector');
+    if (selector && !selector.hasAttribute('data-listener')) {
+        selector.setAttribute('data-listener', 'true');
+        selector.addEventListener('change', async (e) => {
+            const pageName = e.target.value;
+            if (pageName) {
+                try {
+                    const response = await fetch(`/api/pages/${pageName}`);
+                    const page = await response.json();
+                    if (pageEditor) {
+                        pageEditor.root.innerHTML = page.content || '';
+                    }
+                    document.getElementById('pageEditor').style.display = 'block';
+                } catch (error) {
+                    showAlert('Error loading page', 'error');
+                }
+            } else {
+                document.getElementById('pageEditor').style.display = 'none';
+            }
+        });
+    }
 }
 
 async function savePage() {
     const pageName = document.getElementById('pageSelector').value;
-    const content = document.getElementById('pageContent').value;
+    const content = pageEditor ? pageEditor.root.innerHTML : '';
     
     if (!pageName) {
         showAlert('Please select a page', 'error');
@@ -441,6 +574,16 @@ async function loadSettings() {
         const profileUrl = settings.profile_picture_url || 'assets/profile pic.jpg';
         document.getElementById('profileUrl').value = profileUrl;
         updateProfilePreview(profileUrl);
+        
+        // Load resume URL
+        const resumeUrl = settings.resume_url || 'assets/Resume - Prasad ND.pdf';
+        document.getElementById('resumeUrl').value = resumeUrl;
+        document.getElementById('currentResumeUrl').textContent = resumeUrl || 'Not set';
+        
+        // Load video URL
+        const videoUrl = settings.video_url || '';
+        document.getElementById('videoUrl').value = videoUrl;
+        document.getElementById('currentVideoUrl').textContent = videoUrl || 'Not set';
         
         // If no social links, they should have been loaded by init, but if still empty, use defaults
         if (socialLinks.length === 0) {
@@ -668,6 +811,100 @@ async function saveProfile() {
     }
 }
 
+// Resume & Video Management
+async function handleResumeUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    if (file.type !== 'application/pdf') {
+        showAlert('Please upload a PDF file', 'error');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+        const response = await fetch('/api/media/upload', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            const resumeUrl = `/uploads/${data.filename}`;
+            document.getElementById('resumeUrl').value = resumeUrl;
+            document.getElementById('currentResumeUrl').textContent = resumeUrl;
+            showAlert('Resume uploaded successfully', 'success');
+        }
+    } catch (error) {
+        showAlert('Error uploading resume', 'error');
+    }
+}
+
+async function saveResume() {
+    let url = document.getElementById('resumeUrl').value.trim();
+    
+    if (!url) {
+        showAlert('Please enter a resume URL', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/settings/resume_url', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ value: url })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            document.getElementById('currentResumeUrl').textContent = url;
+            showAlert('Resume URL saved successfully', 'success');
+        }
+    } catch (error) {
+        showAlert('Error saving resume URL', 'error');
+    }
+}
+
+async function saveVideo() {
+    let url = document.getElementById('videoUrl').value.trim();
+    
+    if (!url) {
+        showAlert('Please enter a video URL', 'error');
+        return;
+    }
+    
+    // Convert YouTube URL to embed format if needed
+    if (url.includes('youtube.com/watch')) {
+        const videoId = url.match(/[?&]v=([^&]+)/);
+        if (videoId) {
+            url = `https://www.youtube.com/embed/${videoId[1]}`;
+        }
+    } else if (url.includes('youtu.be/')) {
+        const videoId = url.match(/youtu.be\/([^?]+)/);
+        if (videoId) {
+            url = `https://www.youtube.com/embed/${videoId[1]}`;
+        }
+    }
+    
+    try {
+        const response = await fetch('/api/settings/video_url', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ value: url })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            document.getElementById('currentVideoUrl').textContent = url;
+            showAlert('Video URL saved successfully', 'success');
+        }
+    } catch (error) {
+        showAlert('Error saving video URL', 'error');
+    }
+}
+
 // Initialize settings from website
 async function initSettingsFromWebsite() {
     if (!confirm('This will load the current logo, profile picture, and social links from your website files. Continue?')) {
@@ -809,4 +1046,473 @@ document.getElementById('socialLinkForm').addEventListener('submit', async (e) =
         showAlert('Error saving social link', 'error');
     }
 });
+
+// ============================================
+// WORK EXPERIENCE MANAGEMENT
+// ============================================
+let workExperience = [];
+
+async function loadWorkExperience() {
+    try {
+        const response = await fetch('/api/work-experience');
+        workExperience = await response.json();
+        renderWorkExperience();
+    } catch (error) {
+        showAlert('Error loading work experience', 'error');
+    }
+}
+
+function renderWorkExperience() {
+    const container = document.getElementById('workExperienceList');
+    if (!container) return;
+
+    if (workExperience.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-secondary); padding: 2rem; text-align: center;">No work experience entries yet. Click "Add Work Experience" to get started.</p>';
+        return;
+    }
+
+    container.innerHTML = workExperience.map(work => `
+        <div style="padding: 1.5rem; background: var(--bg-secondary); border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border-color);">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                <div>
+                    <h3 style="margin: 0 0 0.5rem 0; color: var(--primary-color);">${work.company}</h3>
+                    <p style="margin: 0 0 0.5rem 0; font-weight: 600;">${work.role}</p>
+                    <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">${work.period}</p>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-sm btn-secondary" onclick="editWorkExperience(${work.id})">Edit</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteWorkExperience(${work.id})">Delete</button>
+                </div>
+            </div>
+            <div style="margin-top: 1rem;">
+                <p style="color: var(--text-secondary); font-size: 0.9rem; white-space: pre-line;">${work.description.split('\n').slice(0, 3).join('\n')}${work.description.split('\n').length > 3 ? '...' : ''}</p>
+            </div>
+        </div>
+    `).join('');
+}
+
+function showWorkExperienceForm(id = null) {
+    const modal = document.getElementById('workExperienceModal');
+    const form = document.getElementById('workExperienceForm');
+    const title = document.getElementById('workExperienceModalTitle');
+    
+    if (id) {
+        const work = workExperience.find(w => w.id === id);
+        if (work) {
+            title.textContent = 'Edit Work Experience';
+            document.getElementById('workExperienceId').value = work.id;
+            document.getElementById('workCompany').value = work.company;
+            document.getElementById('workRole').value = work.role;
+            document.getElementById('workPeriod').value = work.period;
+            document.getElementById('workDescription').value = work.description;
+            document.getElementById('workOrder').value = work.display_order || 0;
+        }
+    } else {
+        title.textContent = 'Add Work Experience';
+        form.reset();
+        document.getElementById('workExperienceId').value = '';
+        document.getElementById('workOrder').value = 0;
+    }
+    
+    modal.style.display = 'flex';
+}
+
+function closeWorkExperienceForm() {
+    document.getElementById('workExperienceModal').style.display = 'none';
+    document.getElementById('workExperienceForm').reset();
+}
+
+function editWorkExperience(id) {
+    showWorkExperienceForm(id);
+}
+
+async function deleteWorkExperience(id) {
+    if (!confirm('Are you sure you want to delete this work experience entry?')) return;
+    
+    try {
+        const response = await fetch(`/api/work-experience/${id}`, { method: 'DELETE' });
+        const data = await response.json();
+        
+        if (data.success) {
+            showAlert('Work experience deleted successfully', 'success');
+            loadWorkExperience();
+        }
+    } catch (error) {
+        showAlert('Error deleting work experience', 'error');
+    }
+}
+
+document.getElementById('workExperienceForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const workId = document.getElementById('workExperienceId').value;
+    const workData = {
+        company: document.getElementById('workCompany').value,
+        role: document.getElementById('workRole').value,
+        period: document.getElementById('workPeriod').value,
+        description: document.getElementById('workDescription').value,
+        display_order: parseInt(document.getElementById('workOrder').value) || 0
+    };
+    
+    try {
+        const url = workId ? `/api/work-experience/${workId}` : '/api/work-experience';
+        const method = workId ? 'PUT' : 'POST';
+        
+        const response = await fetch(url, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(workData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showAlert(workId ? 'Work experience updated successfully' : 'Work experience created successfully', 'success');
+            closeWorkExperienceForm();
+            loadWorkExperience();
+        }
+    } catch (error) {
+        showAlert('Error saving work experience', 'error');
+    }
+});
+
+// ============================================
+// EDUCATION MANAGEMENT
+// ============================================
+let education = [];
+
+async function loadEducation() {
+    try {
+        const response = await fetch('/api/education');
+        education = await response.json();
+        renderEducation();
+    } catch (error) {
+        showAlert('Error loading education', 'error');
+    }
+}
+
+function renderEducation() {
+    const container = document.getElementById('educationList');
+    if (!container) return;
+
+    if (education.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-secondary); padding: 2rem; text-align: center;">No education entries yet. Click "Add Education" to get started.</p>';
+        return;
+    }
+
+    container.innerHTML = education.map(edu => `
+        <div style="padding: 1.5rem; background: var(--bg-secondary); border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border-color);">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div>
+                    <h3 style="margin: 0 0 0.5rem 0; color: var(--primary-color);">${edu.degree}</h3>
+                    <p style="margin: 0 0 0.5rem 0; font-weight: 600;">${edu.institution}</p>
+                    <p style="margin: 0 0 0.5rem 0; color: var(--text-secondary); font-size: 0.9rem;">${edu.period}</p>
+                    ${edu.description ? `<p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">${edu.description}</p>` : ''}
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-sm btn-secondary" onclick="editEducation(${edu.id})">Edit</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteEducation(${edu.id})">Delete</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function showEducationForm(id = null) {
+    const modal = document.getElementById('educationModal');
+    const form = document.getElementById('educationForm');
+    const title = document.getElementById('educationModalTitle');
+    
+    if (id) {
+        const edu = education.find(e => e.id === id);
+        if (edu) {
+            title.textContent = 'Edit Education';
+            document.getElementById('educationId').value = edu.id;
+            document.getElementById('eduDegree').value = edu.degree;
+            document.getElementById('eduInstitution').value = edu.institution;
+            document.getElementById('eduPeriod').value = edu.period;
+            document.getElementById('eduDescription').value = edu.description || '';
+            document.getElementById('eduOrder').value = edu.display_order || 0;
+        }
+    } else {
+        title.textContent = 'Add Education';
+        form.reset();
+        document.getElementById('educationId').value = '';
+        document.getElementById('eduOrder').value = 0;
+    }
+    
+    modal.style.display = 'flex';
+}
+
+function closeEducationForm() {
+    document.getElementById('educationModal').style.display = 'none';
+    document.getElementById('educationForm').reset();
+}
+
+function editEducation(id) {
+    showEducationForm(id);
+}
+
+async function deleteEducation(id) {
+    if (!confirm('Are you sure you want to delete this education entry?')) return;
+    
+    try {
+        const response = await fetch(`/api/education/${id}`, { method: 'DELETE' });
+        const data = await response.json();
+        
+        if (data.success) {
+            showAlert('Education deleted successfully', 'success');
+            loadEducation();
+        }
+    } catch (error) {
+        showAlert('Error deleting education', 'error');
+    }
+}
+
+document.getElementById('educationForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const eduId = document.getElementById('educationId').value;
+    const eduData = {
+        degree: document.getElementById('eduDegree').value,
+        institution: document.getElementById('eduInstitution').value,
+        period: document.getElementById('eduPeriod').value,
+        description: document.getElementById('eduDescription').value,
+        display_order: parseInt(document.getElementById('eduOrder').value) || 0
+    };
+    
+    try {
+        const url = eduId ? `/api/education/${eduId}` : '/api/education';
+        const method = eduId ? 'PUT' : 'POST';
+        
+        const response = await fetch(url, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(eduData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showAlert(eduId ? 'Education updated successfully' : 'Education created successfully', 'success');
+            closeEducationForm();
+            loadEducation();
+        }
+    } catch (error) {
+        showAlert('Error saving education', 'error');
+    }
+});
+
+// ============================================
+// CERTIFICATIONS MANAGEMENT
+// ============================================
+let certifications = [];
+
+async function loadCertifications() {
+    try {
+        const response = await fetch('/api/certifications');
+        certifications = await response.json();
+        renderCertifications();
+    } catch (error) {
+        showAlert('Error loading certifications', 'error');
+    }
+}
+
+function renderCertifications() {
+    const container = document.getElementById('certificationsList');
+    if (!container) return;
+
+    if (certifications.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-secondary); padding: 2rem; text-align: center;">No certifications yet. Click "Add Certification" to get started.</p>';
+        return;
+    }
+
+    container.innerHTML = `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+        ${certifications.map(cert => `
+            <div style="padding: 1.5rem; background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border-color);">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                    <h3 style="margin: 0; color: var(--primary-color);">${cert.name}</h3>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-sm btn-secondary" onclick="editCertification(${cert.id})">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteCertification(${cert.id})">Delete</button>
+                    </div>
+                </div>
+                ${cert.info ? `<p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">${cert.info}</p>` : ''}
+            </div>
+        `).join('')}
+    </div>`;
+}
+
+function showCertificationForm(id = null) {
+    const modal = document.getElementById('certificationModal');
+    const form = document.getElementById('certificationForm');
+    const title = document.getElementById('certificationModalTitle');
+    
+    if (id) {
+        const cert = certifications.find(c => c.id === id);
+        if (cert) {
+            title.textContent = 'Edit Certification';
+            document.getElementById('certificationId').value = cert.id;
+            document.getElementById('certName').value = cert.name;
+            document.getElementById('certIcon').value = cert.icon || '';
+            document.getElementById('certInfo').value = cert.info || '';
+            document.getElementById('certOrder').value = cert.display_order || 0;
+        }
+    } else {
+        title.textContent = 'Add Certification';
+        form.reset();
+        document.getElementById('certificationId').value = '';
+        document.getElementById('certOrder').value = 0;
+    }
+    
+    modal.style.display = 'flex';
+}
+
+function closeCertificationForm() {
+    document.getElementById('certificationModal').style.display = 'none';
+    document.getElementById('certificationForm').reset();
+}
+
+function editCertification(id) {
+    showCertificationForm(id);
+}
+
+async function deleteCertification(id) {
+    if (!confirm('Are you sure you want to delete this certification?')) return;
+    
+    try {
+        const response = await fetch(`/api/certifications/${id}`, { method: 'DELETE' });
+        const data = await response.json();
+        
+        if (data.success) {
+            showAlert('Certification deleted successfully', 'success');
+            loadCertifications();
+        }
+    } catch (error) {
+        showAlert('Error deleting certification', 'error');
+    }
+}
+
+document.getElementById('certificationForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const certId = document.getElementById('certificationId').value;
+    const certData = {
+        name: document.getElementById('certName').value,
+        icon: document.getElementById('certIcon').value,
+        info: document.getElementById('certInfo').value,
+        display_order: parseInt(document.getElementById('certOrder').value) || 0
+    };
+    
+    try {
+        const url = certId ? `/api/certifications/${certId}` : '/api/certifications';
+        const method = certId ? 'PUT' : 'POST';
+        
+        const response = await fetch(url, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(certData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showAlert(certId ? 'Certification updated successfully' : 'Certification created successfully', 'success');
+            closeCertificationForm();
+            loadCertifications();
+        }
+    } catch (error) {
+        showAlert('Error saving certification', 'error');
+    }
+});
+
+// ============================================
+// CONTACT SUBMISSIONS MANAGEMENT
+// ============================================
+let contactSubmissions = [];
+
+async function loadContactSubmissions() {
+    try {
+        const response = await fetch('/api/contact-submissions');
+        contactSubmissions = await response.json();
+        renderContactSubmissions();
+    } catch (error) {
+        showAlert('Error loading contact submissions', 'error');
+    }
+}
+
+function renderContactSubmissions() {
+    const container = document.getElementById('contactSubmissionsList');
+    if (!container) return;
+
+    if (contactSubmissions.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-secondary); padding: 2rem; text-align: center;">No contact form submissions yet.</p>';
+        return;
+    }
+
+    const unreadCount = contactSubmissions.filter(s => s.read_status === 0).length;
+
+    container.innerHTML = `
+        ${unreadCount > 0 ? `<div style="padding: 1rem; background: var(--primary-color); color: white; border-radius: 8px; margin-bottom: 1.5rem;">
+            <strong>${unreadCount} unread message${unreadCount > 1 ? 's' : ''}</strong>
+        </div>` : ''}
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            ${contactSubmissions.map(submission => `
+                <div style="padding: 1.5rem; background: ${submission.read_status === 0 ? 'var(--bg-secondary)' : 'var(--bg-primary)'}; border-radius: 8px; border: 1px solid var(--border-color); ${submission.read_status === 0 ? 'border-left: 4px solid var(--primary-color);' : ''}">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                                <h3 style="margin: 0; color: var(--primary-color);">${submission.name}</h3>
+                                ${submission.read_status === 0 ? '<span style="padding: 0.25rem 0.75rem; background: var(--primary-color); color: white; border-radius: 4px; font-size: 0.85rem;">New</span>' : ''}
+                            </div>
+                            <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">
+                                <a href="mailto:${submission.email}" style="color: var(--primary-color); text-decoration: none;">${submission.email}</a>
+                            </p>
+                            <p style="margin: 0.5rem 0 0 0; color: var(--text-secondary); font-size: 0.85rem;">
+                                ${new Date(submission.created_at).toLocaleString()}
+                            </p>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            ${submission.read_status === 0 ? `<button class="btn btn-sm btn-secondary" onclick="markAsRead(${submission.id})">Mark as Read</button>` : ''}
+                            <button class="btn btn-sm btn-danger" onclick="deleteContactSubmission(${submission.id})">Delete</button>
+                        </div>
+                    </div>
+                    <div style="padding: 1rem; background: ${submission.read_status === 0 ? 'rgba(0, 57, 102, 0.1)' : 'transparent'}; border-radius: 4px; margin-top: 1rem;">
+                        <p style="margin: 0; white-space: pre-wrap; line-height: 1.6;">${submission.message}</p>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+async function markAsRead(id) {
+    try {
+        const response = await fetch(`/api/contact-submissions/${id}/read`, { method: 'PUT' });
+        const data = await response.json();
+        
+        if (data.success) {
+            showAlert('Message marked as read', 'success');
+            loadContactSubmissions();
+        }
+    } catch (error) {
+        showAlert('Error updating message', 'error');
+    }
+}
+
+async function deleteContactSubmission(id) {
+    if (!confirm('Are you sure you want to delete this message?')) return;
+    
+    try {
+        const response = await fetch(`/api/contact-submissions/${id}`, { method: 'DELETE' });
+        const data = await response.json();
+        
+        if (data.success) {
+            showAlert('Message deleted successfully', 'success');
+            loadContactSubmissions();
+        }
+    } catch (error) {
+        showAlert('Error deleting message', 'error');
+    }
+}
 

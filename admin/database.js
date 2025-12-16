@@ -32,9 +32,13 @@ db.serialize(() => {
         image TEXT,
         excerpt TEXT,
         content TEXT,
+        published INTEGER DEFAULT 1,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )`);
+    
+    // Add published column if it doesn't exist (for existing databases)
+    db.run(`ALTER TABLE articles ADD COLUMN published INTEGER DEFAULT 1`);
 
     // Media table for uploaded images
     db.run(`CREATE TABLE IF NOT EXISTS media (
@@ -64,6 +68,51 @@ db.serialize(() => {
         display_order INTEGER DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    // Work Experience table
+    db.run(`CREATE TABLE IF NOT EXISTS work_experience (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        company TEXT NOT NULL,
+        role TEXT NOT NULL,
+        period TEXT NOT NULL,
+        description TEXT NOT NULL,
+        display_order INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    // Education table
+    db.run(`CREATE TABLE IF NOT EXISTS education (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        degree TEXT NOT NULL,
+        institution TEXT NOT NULL,
+        period TEXT NOT NULL,
+        description TEXT,
+        display_order INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    // Certifications table
+    db.run(`CREATE TABLE IF NOT EXISTS certifications (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        icon TEXT,
+        info TEXT,
+        display_order INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    // Contact submissions table
+    db.run(`CREATE TABLE IF NOT EXISTS contact_submissions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL,
+        message TEXT NOT NULL,
+        read_status INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )`);
 
     // Create default admin user if not exists
@@ -144,8 +193,10 @@ const dbHelpers = {
 
     createArticle: (article) => {
         return new Promise((resolve, reject) => {
-            db.run('INSERT INTO articles (title, category, date, image, excerpt, content) VALUES (?, ?, ?, ?, ?, ?)',
-                [article.title, article.category, article.date, article.image, article.excerpt, article.content],
+            const imageUrl = article.featured_image || article.image || '';
+            const published = article.published !== undefined ? article.published : 1;
+            db.run('INSERT INTO articles (title, category, date, image, excerpt, content, published) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                [article.title, article.category, article.date, imageUrl, article.excerpt || '', article.content || '', published],
                 function(err) {
                     if (err) reject(err);
                     else resolve({ id: this.lastID });
@@ -155,8 +206,10 @@ const dbHelpers = {
 
     updateArticle: (id, article) => {
         return new Promise((resolve, reject) => {
-            db.run('UPDATE articles SET title = ?, category = ?, date = ?, image = ?, excerpt = ?, content = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-                [article.title, article.category, article.date, article.image, article.excerpt, article.content, id],
+            const imageUrl = article.featured_image || article.image || '';
+            const published = article.published !== undefined ? article.published : 1;
+            db.run('UPDATE articles SET title = ?, category = ?, date = ?, image = ?, excerpt = ?, content = ?, published = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+                [article.title, article.category, article.date, imageUrl, article.excerpt || '', article.content || '', published, id],
                 function(err) {
                     if (err) reject(err);
                     else resolve({ changes: this.changes });
@@ -281,6 +334,197 @@ const dbHelpers = {
     deleteSocialLink: (id) => {
         return new Promise((resolve, reject) => {
             db.run('DELETE FROM social_links WHERE id = ?', [id], function(err) {
+                if (err) reject(err);
+                else resolve({ changes: this.changes });
+            });
+        });
+    },
+
+    // Work Experience
+    getAllWorkExperience: () => {
+        return new Promise((resolve, reject) => {
+            db.all('SELECT * FROM work_experience ORDER BY display_order ASC, created_at DESC', (err, rows) => {
+                if (err) reject(err);
+                else resolve(rows);
+            });
+        });
+    },
+
+    getWorkExperience: (id) => {
+        return new Promise((resolve, reject) => {
+            db.get('SELECT * FROM work_experience WHERE id = ?', [id], (err, row) => {
+                if (err) reject(err);
+                else resolve(row);
+            });
+        });
+    },
+
+    createWorkExperience: (work) => {
+        return new Promise((resolve, reject) => {
+            db.run('INSERT INTO work_experience (company, role, period, description, display_order) VALUES (?, ?, ?, ?, ?)',
+                [work.company, work.role, work.period, work.description, work.display_order || 0], function(err) {
+                if (err) reject(err);
+                else resolve({ id: this.lastID });
+            });
+        });
+    },
+
+    updateWorkExperience: (id, work) => {
+        return new Promise((resolve, reject) => {
+            db.run('UPDATE work_experience SET company = ?, role = ?, period = ?, description = ?, display_order = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+                [work.company, work.role, work.period, work.description, work.display_order || 0, id], function(err) {
+                if (err) reject(err);
+                else resolve({ changes: this.changes });
+            });
+        });
+    },
+
+    deleteWorkExperience: (id) => {
+        return new Promise((resolve, reject) => {
+            db.run('DELETE FROM work_experience WHERE id = ?', [id], function(err) {
+                if (err) reject(err);
+                else resolve({ changes: this.changes });
+            });
+        });
+    },
+
+    // Education
+    getAllEducation: () => {
+        return new Promise((resolve, reject) => {
+            db.all('SELECT * FROM education ORDER BY display_order ASC, created_at DESC', (err, rows) => {
+                if (err) reject(err);
+                else resolve(rows);
+            });
+        });
+    },
+
+    getEducation: (id) => {
+        return new Promise((resolve, reject) => {
+            db.get('SELECT * FROM education WHERE id = ?', [id], (err, row) => {
+                if (err) reject(err);
+                else resolve(row);
+            });
+        });
+    },
+
+    createEducation: (edu) => {
+        return new Promise((resolve, reject) => {
+            db.run('INSERT INTO education (degree, institution, period, description, display_order) VALUES (?, ?, ?, ?, ?)',
+                [edu.degree, edu.institution, edu.period, edu.description || '', edu.display_order || 0], function(err) {
+                if (err) reject(err);
+                else resolve({ id: this.lastID });
+            });
+        });
+    },
+
+    updateEducation: (id, edu) => {
+        return new Promise((resolve, reject) => {
+            db.run('UPDATE education SET degree = ?, institution = ?, period = ?, description = ?, display_order = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+                [edu.degree, edu.institution, edu.period, edu.description || '', edu.display_order || 0, id], function(err) {
+                if (err) reject(err);
+                else resolve({ changes: this.changes });
+            });
+        });
+    },
+
+    deleteEducation: (id) => {
+        return new Promise((resolve, reject) => {
+            db.run('DELETE FROM education WHERE id = ?', [id], function(err) {
+                if (err) reject(err);
+                else resolve({ changes: this.changes });
+            });
+        });
+    },
+
+    // Certifications
+    getAllCertifications: () => {
+        return new Promise((resolve, reject) => {
+            db.all('SELECT * FROM certifications ORDER BY display_order ASC, created_at DESC', (err, rows) => {
+                if (err) reject(err);
+                else resolve(rows);
+            });
+        });
+    },
+
+    getCertification: (id) => {
+        return new Promise((resolve, reject) => {
+            db.get('SELECT * FROM certifications WHERE id = ?', [id], (err, row) => {
+                if (err) reject(err);
+                else resolve(row);
+            });
+        });
+    },
+
+    createCertification: (cert) => {
+        return new Promise((resolve, reject) => {
+            db.run('INSERT INTO certifications (name, icon, info, display_order) VALUES (?, ?, ?, ?)',
+                [cert.name, cert.icon || '', cert.info || '', cert.display_order || 0], function(err) {
+                if (err) reject(err);
+                else resolve({ id: this.lastID });
+            });
+        });
+    },
+
+    updateCertification: (id, cert) => {
+        return new Promise((resolve, reject) => {
+            db.run('UPDATE certifications SET name = ?, icon = ?, info = ?, display_order = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+                [cert.name, cert.icon || '', cert.info || '', cert.display_order || 0, id], function(err) {
+                if (err) reject(err);
+                else resolve({ changes: this.changes });
+            });
+        });
+    },
+
+    deleteCertification: (id) => {
+        return new Promise((resolve, reject) => {
+            db.run('DELETE FROM certifications WHERE id = ?', [id], function(err) {
+                if (err) reject(err);
+                else resolve({ changes: this.changes });
+            });
+        });
+    },
+
+    // Contact Submissions
+    getAllContactSubmissions: () => {
+        return new Promise((resolve, reject) => {
+            db.all('SELECT * FROM contact_submissions ORDER BY created_at DESC', (err, rows) => {
+                if (err) reject(err);
+                else resolve(rows);
+            });
+        });
+    },
+
+    getContactSubmission: (id) => {
+        return new Promise((resolve, reject) => {
+            db.get('SELECT * FROM contact_submissions WHERE id = ?', [id], (err, row) => {
+                if (err) reject(err);
+                else resolve(row);
+            });
+        });
+    },
+
+    createContactSubmission: (submission) => {
+        return new Promise((resolve, reject) => {
+            db.run('INSERT INTO contact_submissions (name, email, message) VALUES (?, ?, ?)',
+                [submission.name, submission.email, submission.message], function(err) {
+                if (err) reject(err);
+                else resolve({ id: this.lastID });
+            });
+        });
+    },
+
+    markAsRead: (id) => {
+        return new Promise((resolve, reject) => {
+            db.run('UPDATE contact_submissions SET read_status = 1 WHERE id = ?', [id], function(err) {
+                if (err) reject(err);
+                else resolve({ changes: this.changes });
+            });
+        });
+    },
+
+    deleteContactSubmission: (id) => {
+        return new Promise((resolve, reject) => {
+            db.run('DELETE FROM contact_submissions WHERE id = ?', [id], function(err) {
                 if (err) reject(err);
                 else resolve({ changes: this.changes });
             });

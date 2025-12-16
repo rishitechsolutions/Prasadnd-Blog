@@ -366,7 +366,7 @@ const initReviewsSlider = () => {
 // Contact Form Handler
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
+    contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         // Get form data
@@ -375,15 +375,37 @@ if (contactForm) {
         const email = formData.get('email');
         const message = formData.get('message');
         
-        // Here you can add your form submission logic
-        // For example, send to a server endpoint, email service, etc.
-        console.log('Form submitted:', { name, email, message });
+        const submitButton = contactForm.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+        submitButton.disabled = true;
+        submitButton.textContent = 'Sending...';
         
-        // Show success message (you can customize this)
-        alert('Thank you for your message! I will get back to you soon.');
-        
-        // Reset form
-        contactForm.reset();
+        try {
+            // Get API base URL from config
+            const API_BASE_URL = window.API_BASE_URL || 'https://portfolio-website-ynx2.onrender.com';
+            
+            const response = await fetch(`${API_BASE_URL}/api/contact`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, message })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Show success message
+                alert('Thank you for your message! We will get back to you soon.');
+                contactForm.reset();
+            } else {
+                alert('There was an error sending your message. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            alert('There was an error sending your message. Please try again.');
+        } finally {
+            submitButton.disabled = false;
+            submitButton.textContent = originalText;
+        }
     });
 }
 

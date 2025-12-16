@@ -349,6 +349,219 @@ app.get('/api/public/articles', async (req, res) => {
     }
 });
 
+// Public work experience endpoint
+app.get('/api/public/work-experience', async (req, res) => {
+    try {
+        const workExp = await dbHelpers.getAllWorkExperience();
+        res.json(workExp);
+    } catch (error) {
+        res.json([]);
+    }
+});
+
+// Public education endpoint
+app.get('/api/public/education', async (req, res) => {
+    try {
+        const education = await dbHelpers.getAllEducation();
+        res.json(education);
+    } catch (error) {
+        res.json([]);
+    }
+});
+
+// Public certifications endpoint
+app.get('/api/public/certifications', async (req, res) => {
+    try {
+        const certifications = await dbHelpers.getAllCertifications();
+        res.json(certifications);
+    } catch (error) {
+        res.json([]);
+    }
+});
+
+// ============================================
+// ADMIN API ENDPOINTS (Authentication required)
+// ============================================
+
+// Work Experience routes
+app.get('/api/work-experience', requireAuth, async (req, res) => {
+    try {
+        const workExp = await dbHelpers.getAllWorkExperience();
+        res.json(workExp);
+    } catch (error) {
+        res.status(500).json({ error: 'Error fetching work experience' });
+    }
+});
+
+app.get('/api/work-experience/:id', requireAuth, async (req, res) => {
+    try {
+        const work = await dbHelpers.getWorkExperience(req.params.id);
+        res.json(work || {});
+    } catch (error) {
+        res.status(500).json({ error: 'Error fetching work experience' });
+    }
+});
+
+app.post('/api/work-experience', requireAuth, async (req, res) => {
+    try {
+        const result = await dbHelpers.createWorkExperience(req.body);
+        res.json({ success: true, id: result.id, message: 'Work experience created successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error creating work experience' });
+    }
+});
+
+app.put('/api/work-experience/:id', requireAuth, async (req, res) => {
+    try {
+        await dbHelpers.updateWorkExperience(req.params.id, req.body);
+        res.json({ success: true, message: 'Work experience updated successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error updating work experience' });
+    }
+});
+
+app.delete('/api/work-experience/:id', requireAuth, async (req, res) => {
+    try {
+        await dbHelpers.deleteWorkExperience(req.params.id);
+        res.json({ success: true, message: 'Work experience deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error deleting work experience' });
+    }
+});
+
+// Education routes
+app.get('/api/education', requireAuth, async (req, res) => {
+    try {
+        const education = await dbHelpers.getAllEducation();
+        res.json(education);
+    } catch (error) {
+        res.status(500).json({ error: 'Error fetching education' });
+    }
+});
+
+app.get('/api/education/:id', requireAuth, async (req, res) => {
+    try {
+        const edu = await dbHelpers.getEducation(req.params.id);
+        res.json(edu || {});
+    } catch (error) {
+        res.status(500).json({ error: 'Error fetching education' });
+    }
+});
+
+app.post('/api/education', requireAuth, async (req, res) => {
+    try {
+        const result = await dbHelpers.createEducation(req.body);
+        res.json({ success: true, id: result.id, message: 'Education created successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error creating education' });
+    }
+});
+
+app.put('/api/education/:id', requireAuth, async (req, res) => {
+    try {
+        await dbHelpers.updateEducation(req.params.id, req.body);
+        res.json({ success: true, message: 'Education updated successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error updating education' });
+    }
+});
+
+app.delete('/api/education/:id', requireAuth, async (req, res) => {
+    try {
+        await dbHelpers.deleteEducation(req.params.id);
+        res.json({ success: true, message: 'Education deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error deleting education' });
+    }
+});
+
+// Certifications routes
+app.get('/api/certifications', requireAuth, async (req, res) => {
+    try {
+        const certifications = await dbHelpers.getAllCertifications();
+        res.json(certifications);
+    } catch (error) {
+        res.status(500).json({ error: 'Error fetching certifications' });
+    }
+});
+
+app.get('/api/certifications/:id', requireAuth, async (req, res) => {
+    try {
+        const cert = await dbHelpers.getCertification(req.params.id);
+        res.json(cert || {});
+    } catch (error) {
+        res.status(500).json({ error: 'Error fetching certification' });
+    }
+});
+
+app.post('/api/certifications', requireAuth, async (req, res) => {
+    try {
+        const result = await dbHelpers.createCertification(req.body);
+        res.json({ success: true, id: result.id, message: 'Certification created successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error creating certification' });
+    }
+});
+
+app.put('/api/certifications/:id', requireAuth, async (req, res) => {
+    try {
+        await dbHelpers.updateCertification(req.params.id, req.body);
+        res.json({ success: true, message: 'Certification updated successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error updating certification' });
+    }
+});
+
+app.delete('/api/certifications/:id', requireAuth, async (req, res) => {
+    try {
+        await dbHelpers.deleteCertification(req.params.id);
+        res.json({ success: true, message: 'Certification deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error deleting certification' });
+    }
+});
+
+// Contact Submissions routes
+app.post('/api/contact', async (req, res) => {
+    try {
+        const { name, email, message } = req.body;
+        if (!name || !email || !message) {
+            return res.status(400).json({ error: 'Name, email, and message are required' });
+        }
+        const result = await dbHelpers.createContactSubmission({ name, email, message });
+        res.json({ success: true, id: result.id, message: 'Thank you for your message! We will get back to you soon.' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error submitting contact form' });
+    }
+});
+
+app.get('/api/contact-submissions', requireAuth, async (req, res) => {
+    try {
+        const submissions = await dbHelpers.getAllContactSubmissions();
+        res.json(submissions);
+    } catch (error) {
+        res.status(500).json({ error: 'Error fetching contact submissions' });
+    }
+});
+
+app.put('/api/contact-submissions/:id/read', requireAuth, async (req, res) => {
+    try {
+        await dbHelpers.markAsRead(req.params.id);
+        res.json({ success: true, message: 'Submission marked as read' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error updating submission' });
+    }
+});
+
+app.delete('/api/contact-submissions/:id', requireAuth, async (req, res) => {
+    try {
+        await dbHelpers.deleteContactSubmission(req.params.id);
+        res.json({ success: true, message: 'Submission deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error deleting submission' });
+    }
+});
+
 // Start server
 app.listen(PORT, () => {
     console.log(`\n🚀 Admin Dashboard running on http://localhost:${PORT}/admin`);
