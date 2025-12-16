@@ -10,6 +10,18 @@ const bcrypt = require('bcrypt');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// CORS middleware for frontend access
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*'); // Allow all origins (you can restrict this to your Netlify domain)
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    if (req.method === 'OPTIONS') {
+        res.sendStatus(200);
+    } else {
+        next();
+    }
+});
+
 // Configure multer for file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -288,6 +300,52 @@ app.post('/api/settings/init', async (req, res) => {
     } catch (error) {
         // Don't fail - just return success with defaults
         res.json({ success: true, message: 'Using default settings', error: error.message });
+    }
+});
+
+// ============================================
+// PUBLIC API ENDPOINTS (No authentication required)
+// These are for the frontend website to fetch content
+// ============================================
+
+// Public settings endpoint
+app.get('/api/public/settings', async (req, res) => {
+    try {
+        const settings = await dbHelpers.getAllSettings();
+        // getAllSettings already returns an object, so use it directly
+        res.json(settings);
+    } catch (error) {
+        // Return defaults if error
+        res.json({
+            logo_url: 'assets/logo.jpg',
+            profile_picture_url: 'assets/profile pic.jpg'
+        });
+    }
+});
+
+// Public social links endpoint
+app.get('/api/public/social-links', async (req, res) => {
+    try {
+        const links = await dbHelpers.getAllSocialLinks();
+        // Sort by display_order
+        links.sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+        res.json(links);
+    } catch (error) {
+        res.json([]);
+    }
+});
+
+// Public articles endpoint (only published articles)
+app.get('/api/public/articles', async (req, res) => {
+    try {
+        const articles = await dbHelpers.getAllArticles();
+        // Filter only published articles and sort by date (newest first)
+        const published = articles
+            .filter(article => article.published === 1)
+            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        res.json(published);
+    } catch (error) {
+        res.json([]);
     }
 });
 
