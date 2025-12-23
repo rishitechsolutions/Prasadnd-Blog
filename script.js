@@ -13,6 +13,30 @@ document.querySelectorAll('.nav-link').forEach(link => {
     });
 });
 
+// Set active nav link based on current page
+const setActiveNavLink = () => {
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        const linkHref = link.getAttribute('href');
+        const linkPage = linkHref.split('/').pop();
+        
+        // Check if this link matches the current page
+        if (linkPage === currentPage || 
+            (currentPage === '' && linkPage === 'index.html') ||
+            (currentPage === 'index.html' && linkPage === 'index.html')) {
+            link.classList.add('active');
+        }
+    });
+};
+
+// Set active nav link on page load
+document.addEventListener('DOMContentLoaded', () => {
+    setActiveNavLink();
+});
+
 // Smooth Scrolling
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
