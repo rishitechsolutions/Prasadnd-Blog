@@ -15,7 +15,12 @@ document.querySelectorAll('.nav-link').forEach(link => {
 
 // Set active nav link based on current page
 const setActiveNavLink = () => {
-    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    let currentPage = window.location.pathname.split('/').pop() || '';
+    // Handle root path or empty path (home page)
+    if (currentPage === '' || currentPage === '/' || currentPage === 'index.html') {
+        currentPage = 'index.html';
+    }
+    
     const navLinks = document.querySelectorAll('.nav-link');
     
     navLinks.forEach(link => {
@@ -24,9 +29,9 @@ const setActiveNavLink = () => {
         const linkPage = linkHref.split('/').pop();
         
         // Check if this link matches the current page
+        // Special case: if current page is index.html or empty, match with index.html link
         if (linkPage === currentPage || 
-            (currentPage === '' && linkPage === 'index.html') ||
-            (currentPage === 'index.html' && linkPage === 'index.html')) {
+            ((currentPage === 'index.html' || currentPage === '') && linkPage === 'index.html')) {
             link.classList.add('active');
         }
     });
