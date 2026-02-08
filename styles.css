@@ -521,7 +521,8 @@ h1, h2, h3, h4, h5, h6,
     border: 20px solid #E6E6E6;
     opacity: 0;
     transition: opacity 0.6s ease;
-    z-index: 2;
+    z-index: 3;
+    display: block;
 }
 
 .hero-profile-reveal.revealed .hero-profile-image {

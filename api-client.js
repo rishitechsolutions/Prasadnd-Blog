@@ -48,14 +48,14 @@
     }
 
     /**
-     * Update profile picture
+     * Update profile picture (does not change the hero scroll-reveal image; that stays as casual.jpg)
      */
     function updateProfilePicture(profileUrl) {
         if (!profileUrl) return;
-        
+        // Only update profile images that are NOT inside .hero-profile-reveal (body scroll image stays casual.jpg)
         const profileElements = document.querySelectorAll('.hero-profile-image, img[alt="Profile"]');
         profileElements.forEach(img => {
-            // Handle both relative and absolute URLs
+            if (img.closest('.hero-profile-reveal')) return; // keep static casual.jpg in body
             if (profileUrl.startsWith('http') || profileUrl.startsWith('//')) {
                 img.src = profileUrl;
             } else if (profileUrl.startsWith('/')) {
@@ -67,7 +67,7 @@
     }
 
     /**
-     * Update social links in sidebar
+     * Update social links in sidebar (only replace if API has valid links; otherwise keep static HTML icons)
      */
     function updateSocialLinks(socialLinks) {
         if (!socialLinks || socialLinks.length === 0) return;
@@ -75,36 +75,29 @@
         const socialIconsContainer = document.querySelector('.social-icons');
         if (!socialIconsContainer) return;
 
-        // Clear existing social icons (but keep structure if needed)
-        const existingIcons = socialIconsContainer.querySelectorAll('.social-icon');
-        
-        // If we have social links from API, replace them
-        if (socialLinks.length > 0) {
-            // Clear and rebuild
-            socialIconsContainer.innerHTML = '';
-            
-            socialLinks.forEach(link => {
-                if (!link.url || link.url === '#') return;
-                
-                const iconElement = document.createElement('a');
-                iconElement.href = link.url;
-                iconElement.className = 'social-icon';
-                iconElement.setAttribute('aria-label', link.platform || 'Social');
-                iconElement.target = '_blank';
-                iconElement.rel = 'noopener noreferrer';
-                
-                // Use custom icon if provided, otherwise use default SVG based on platform
-                if (link.icon) {
-                    iconElement.innerHTML = link.icon;
-                } else {
-                    // Default SVG icons based on platform
-                    const svg = getDefaultSocialIcon(link.platform);
-                    iconElement.innerHTML = svg;
-                }
-                
-                socialIconsContainer.appendChild(iconElement);
-            });
-        }
+        // Only use API links if at least one has a valid URL (not empty and not '#')
+        const validLinks = socialLinks.filter(link => link.url && link.url.trim() !== '' && link.url !== '#');
+        if (validLinks.length === 0) return; // keep default static icons
+
+        socialIconsContainer.innerHTML = '';
+
+        validLinks.forEach(link => {
+            const iconElement = document.createElement('a');
+            iconElement.href = link.url;
+            iconElement.className = 'social-icon';
+            iconElement.setAttribute('aria-label', link.platform || 'Social');
+            iconElement.target = '_blank';
+            iconElement.rel = 'noopener noreferrer';
+
+            if (link.icon) {
+                iconElement.innerHTML = link.icon;
+            } else {
+                const svg = getDefaultSocialIcon(link.platform);
+                iconElement.innerHTML = svg;
+            }
+
+            socialIconsContainer.appendChild(iconElement);
+        });
     }
 
     /**
