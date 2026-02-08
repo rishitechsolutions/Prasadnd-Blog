@@ -67,6 +67,28 @@ window.addEventListener('scroll', () => {
     }
 });
 
+// Who I Am: reveal profile on scroll (scroll-down indicator fades, profile shows)
+const heroProfileReveal = document.querySelector('.hero-profile-reveal');
+
+if (heroProfileReveal) {
+    const revealOnScroll = () => {
+        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollContainer = document.querySelector('.left-content');
+        const scrollTop = scrollContainer ? scrollContainer.scrollTop : scrollY;
+        const threshold = 60;
+        if (scrollTop > threshold || scrollY > threshold) {
+            heroProfileReveal.classList.add('revealed');
+        } else {
+            heroProfileReveal.classList.remove('revealed');
+        }
+    };
+    window.addEventListener('scroll', revealOnScroll, { passive: true });
+    if (document.querySelector('.left-content')) {
+        document.querySelector('.left-content').addEventListener('scroll', revealOnScroll, { passive: true });
+    }
+    revealOnScroll();
+}
+
 backToTopBtn.addEventListener('click', () => {
     window.scrollTo({
         top: 0,
@@ -293,45 +315,56 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// Also listen to scroll on left-content specifically
+// Scroll progress line between body and image (moves down on scroll down, up on scroll up)
 const leftContent = document.querySelector('.left-content');
 const scrollProgressFill = document.querySelector('.scroll-progress-fill');
 
-if (leftContent) {
-    // Update scroll progress
-    const updateScrollProgress = () => {
-        const scrollTop = leftContent.scrollTop;
+const updateScrollProgress = () => {
+    if (!scrollProgressFill) return;
+    const leftContent = document.querySelector('.left-content');
+    let scrollPercentage = 0;
+    // Prefer left-content scroll if it's the scroll container
+    if (leftContent) {
         const scrollHeight = leftContent.scrollHeight - leftContent.clientHeight;
-        const scrollPercentage = (scrollTop / scrollHeight) * 100;
-        
-        if (scrollProgressFill) {
-            scrollProgressFill.style.height = scrollPercentage + '%';
+        if (scrollHeight > 0) {
+            scrollPercentage = (leftContent.scrollTop / scrollHeight) * 100;
         }
-    };
+    }
+    // Otherwise use window/document scroll (e.g. when left-content has overflow: visible)
+    if (scrollPercentage === 0) {
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        if (docHeight > 0) {
+            scrollPercentage = (window.scrollY / docHeight) * 100;
+        }
+    }
+    scrollProgressFill.style.height = Math.min(100, Math.max(0, scrollPercentage)) + '%';
+};
 
+if (leftContent) {
     leftContent.addEventListener('scroll', () => {
         let current = '';
         const scrollPosition = leftContent.scrollTop;
-        
-        // Update scroll progress
         updateScrollProgress();
-        
         sections.forEach(section => {
             const sectionTop = section.offsetTop;
             if (scrollPosition >= sectionTop - 200) {
                 current = section.getAttribute('id');
             }
         });
-
-        // Update page indicator only if not on home page
         if (pageIndicator && current && !isHomePage) {
             const pageName = pageNames[current] || 'HOME';
             pageIndicator.textContent = pageName;
         }
     });
+}
 
-    // Initialize scroll progress on load
+// Also update progress on window scroll (for pages where body scrolls)
+window.addEventListener('scroll', updateScrollProgress);
+
+// Initialize scroll progress on load and when DOM ready
+if (scrollProgressFill) {
     updateScrollProgress();
+    document.addEventListener('DOMContentLoaded', updateScrollProgress);
 }
 
 // Reviews Slider
