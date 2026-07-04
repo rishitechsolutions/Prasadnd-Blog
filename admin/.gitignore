@@ -1,8 +1,0 @@
-node_modules/
-uploads/*
-!uploads/.gitkeep
-database.db
-.env
-*.log
-.DS_Store
-

@@ -4,12 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profession</title>
+    <link rel="icon" type="image/jpeg" href="assets/newlogo.JPEG">
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&family=Lexend+Giga:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Page Loader -->
+    <div class="page-loader" id="pageLoader">
+        <div class="page-loader-line"></div>
+        <div class="page-loader-content">
+            <div class="page-loader-dots">
+                <span class="page-loader-dot"></span>
+                <span class="page-loader-dot"></span>
+                <span class="page-loader-dot"></span>
+                <span class="page-loader-dot"></span>
+            </div>
+        </div>
+    </div>
+
     <!-- Navigation Menu -->
     <nav class="navbar">
         <div class="nav-container">
@@ -21,9 +35,10 @@
                 <li><a href="education.html" class="nav-link">EDUCATION</a></li>
                 <li><a href="profession.html" class="nav-link">PROFESSION</a></li>
                 <li><a href="beyond-work.html" class="nav-link">BEYOND WORK</a></li>
+                <li><a href="https://www.youtube.com/@learnwithprasadnd" class="nav-link" target="_blank" rel="noopener noreferrer">LEARN WITH PRASAD</a></li>
                 <li><a href="contact.html" class="nav-link">CONTACT</a></li>
             </ul>
-            <a href="mailto:prasad.nd01@gmail.com" class="nav-icon-box" aria-label="Email">
+            <a href="mailto:Prasad.nd.2026@gmail.com" class="nav-icon-box" aria-label="Email">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                     <polyline points="22,6 12,13 2,6"></polyline>
@@ -48,34 +63,10 @@
         <div class="left-sidebar">
             <div class="sidebar-content">
                 <div class="current-page">
+                    <span class="page-indicator-dot"></span>
                     <span class="page-indicator">PROFESSION</span>
                 </div>
-                <div class="social-icons">
-                    <a href="#" class="social-icon" aria-label="Facebook">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
-                        </svg>
-                    </a>
-                    <a href="#" class="social-icon" aria-label="Instagram">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                        </svg>
-                    </a>
-                    <a href="#" class="social-icon" aria-label="LinkedIn">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-                            <rect x="2" y="9" width="4" height="12"></rect>
-                            <circle cx="4" cy="4" r="2"></circle>
-                        </svg>
-                    </a>
-                    <a href="#" class="social-icon" aria-label="Twitter">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
-                        </svg>
-                    </a>
-                </div>
+                
             </div>
         </div>
 
@@ -83,181 +74,157 @@
         <div class="left-content">
             <!-- Profession Section -->
             <section class="profession-section">
-                <p class="profession-quote scroll-animate">"The only way to do great work is to love what you do."</p>
+                <p class="profession-quote scroll-animate">"The only way to do great work is to love what you do"</p>
                 <p class="profession-quote-author scroll-animate scroll-animate-delay-1">Steve Jobs</p>
                 
                 <!-- Professional Membership Section -->
-                <div class="professional-membership-section scroll-animate scroll-animate-delay-2">
-                    <h4 class="membership-heading">Professional Membership</h4>
-                    <div class="membership-images-row">
-                        <div class="membership-image-item">
-                            <img src="assets/membership1.jpeg" alt="Membership 1">
+                <div class="professional-membership-section">
+                    <h4 class="membership-heading scroll-animate">Professional Memberships</h4>
+                    <div class="membership-images-container">
+                        <div class="membership-images-row">
+                            <div class="membership-image-item scroll-animate scroll-animate-delay-1">
+                                <a href="https://www.wellcertified.com/" target="_blank" rel="noopener noreferrer">
+                                    <img src="assets/membership1.jpeg" alt="Membership 1 - WELL Certified">
+                                </a>
+                            </div>
+                            <div class="membership-image-item scroll-animate scroll-animate-delay-2">
+                                <a href="https://www.corenetglobal.org/" target="_blank" rel="noopener noreferrer">
+                                    <img src="assets/membership2.jpeg" alt="Membership 2 - CoreNet Global">
+                                </a>
+                            </div>
+                            <div class="membership-image-item scroll-animate scroll-animate-delay-3">
+                                <a href="https://www.iwfm.org.uk/" target="_blank" rel="noopener noreferrer">
+                                    <img src="assets/membership3.jpeg" alt="Membership 3 - IWFM">
+                                </a>
+                            </div>
+                            <div class="membership-image-item scroll-animate scroll-animate-delay-4">
+                                <a href="https://www.ifma.org/" target="_blank" rel="noopener noreferrer">
+                                    <img src="assets/membership4.jpeg" alt="Membership 4 - IFMA">
+                                </a>
+                            </div>
                         </div>
-                        <div class="membership-image-item">
-                            <img src="assets/membership2.jpeg" alt="Membership 2">
-                        </div>
-                        <div class="membership-image-item">
-                            <img src="assets/membership3.jpeg" alt="Membership 3">
-                        </div>
-                        <div class="membership-image-item">
-                            <img src="assets/membership4.jpeg" alt="Membership 4">
-                        </div>
-                        <div class="membership-image-item">
-                            <img src="assets/membership5.png" alt="Membership 5">
+                        <div class="membership-images-row">
+                            <div class="membership-image-item scroll-animate scroll-animate-delay-5">
+                                <a href="https://www.rics.org/" target="_blank" rel="noopener noreferrer">
+                                    <img src="assets/membership5.jpeg" alt="Membership 5 - RICS">
+                                </a>
+                            </div>
+                            <div class="membership-image-item scroll-animate scroll-animate-delay-6">
+                                <a href="https://www.usgbc.org/" target="_blank" rel="noopener noreferrer">
+                                    <img src="assets/membership6.jpeg" alt="Membership 6 - USGBC">
+                                </a>
+                            </div>
+                            <div class="membership-image-item scroll-animate scroll-animate-delay-7">
+                                <a href="https://igbc.in/" target="_blank" rel="noopener noreferrer">
+                                    <img src="assets/membership7.jpeg" alt="Membership 7 - IGBC">
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Break Line -->
-                <div class="membership-break-line"></div>
                 
-                <!-- Resume & Video Section -->
-                <section class="resume-video-section scroll-animate scroll-animate-delay-3">
-                    <div class="resume-video-container">
-                        <div class="resume-download scroll-animate scroll-animate-delay-1">
-                            <div class="resume-icon">
-                                <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                    <polyline points="7 10 12 15 17 10"></polyline>
-                                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                                </svg>
-                            </div>
-                            <h4>Download Resume</h4>
-                            <p>Get a copy of my professional resume</p>
-                            <a href="assets/Resume - Prasad ND.pdf" class="resume-download-btn" download="Resume - Prasad ND.pdf">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                    <polyline points="7 10 12 15 17 10"></polyline>
-                                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                                </svg>
-                                Download PDF
-                            </a>
-                        </div>
-                        <div class="about-video scroll-animate scroll-animate-delay-2">
-                            <h4>About Me Video</h4>
-                            <p>Watch my introduction video</p>
-                            <div class="video-wrapper">
-                                <iframe 
-                                    src="https://www.youtube.com/embed/YOUR_VIDEO_ID" 
-                                    frameborder="0" 
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                    allowfullscreen>
-                                </iframe>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                
+                
                 
                 <h3 class="section-title-with-lines scroll-animate scroll-animate-delay-4">
                     <span class="line-left"></span>
-                    <span class="title-text">Profession</span>
+                    <span class="title-text">Professional Experience</span>
                     <span class="line-right"></span>
                 </h3>
+                <div class="career-overview scroll-animate scroll-animate-delay-5">
+                    <h4 class="career-overview-heading">I AM NOT BROUGHT IN TO MAINTAIN SYSTEMS</h4>
+                    <p>I am brought in to build them, stabilize them, and make them run without dependency.</p>
+                    <p>Seventeen years. The environments change. The instinct does not.</p>
+                    <p>My work sits at the intersection of strategy and execution translating what a business needs into operating models that deliver performance without overcomplication. I am not interested in complexity for its own sake. I am interested in what works, consistently, at scale, without constant intervention. </p>
+                    <p>Simple enough to execute. Strong enough to grow. Built to run without me.</p>
+                </div>
                 <div class="profession-timeline">
                     <div class="timeline-line"></div>
-                    <div class="profession-item scroll-animate scroll-animate-delay-1">
+                    <div class="profession-item">
                         <div class="timeline-dot"></div>
                         <div class="profession-content">
-                            <div class="profession-header">
+                            <div class="profession-header scroll-animate">
                                 <h4 class="profession-company">Equinix India Private Limited</h4>
                                 <span class="profession-period">September 2024 – Present</span>
                             </div>
-                            <p class="profession-role">Facilities and Corporate Real Estate Manager – India</p>
-                            <ul class="profession-description">
-                                <li>Lead India Facilities Management and Corporate Real Estate operations aligned with global CRE and workplace strategy.</li>
-                                <li>Drive Integrated Facilities Management (IFM) delivery across multiple sites covering hard services, soft services, preventive maintenance, and vendor governance.</li>
-                                <li>Lead capital projects including site readiness, office fit-outs, expansions, refurbishments, and workplace modernization initiatives.</li>
-                                <li>Own CAPEX and OPEX planning, cost control, vendor commercials, and financial governance.</li>
-                                <li>Strengthen EHS governance, statutory compliance, fire and life safety systems, and emergency preparedness across India sites.</li>
-                                <li>Lead Business Continuity Planning (BCP) and crisis management readiness to ensure operational resilience.</li>
-                                <li>Partner with global ESG teams to embed energy efficiency initiatives, waste reduction programs, and sustainability metrics into workplace operations.</li>
-                                <li>Liaise with statutory and government authorities including BBMP, BESCOM, Fire Department, Police, and environmental agencies to ensure uninterrupted compliance.</li>
+                            <p class="profession-role scroll-animate scroll-animate-delay-1">Facilities and Corporate Real Estate Manager – India</p>
+                            <ul class="profession-description scroll-animate scroll-animate-delay-2">
+                                <li>Equinix is one of the world's largest data center and interconnection companies. When I joined, a Corporate Real Estate function existed in India, but it had not been built into what the business actually needed. Today, it operates as a structured Centre of Excellence, with a dedicated team, integrated vendor partners, and governance frameworks defining how we operate across metro cities in India.</li>
+                                <li>Building that required more than operational knowledge. It required the ability to translate a global CRE strategy into an India-specific model, navigate ambiguity without losing direction, and make early decisions that would be difficult to reverse later. That is the work I was brought in to do, and it is the work I continue to lead.</li>
                             </ul>
                         </div>
                     </div>
-                    <div class="profession-item scroll-animate scroll-animate-delay-2">
+                    <div class="profession-item">
                         <div class="timeline-dot"></div>
                         <div class="profession-content">
-                            <div class="profession-header">
+                            <div class="profession-header scroll-animate">
                                 <h4 class="profession-company">GSK India Global Services Pvt Ltd</h4>
                                 <span class="profession-period">August 2020 – September 2024</span>
                             </div>
-                            <p class="profession-role">Manager and Site Lead – Workplace Real Estate & Facilities Management</p>
-                            <ul class="profession-description">
-                                <li>Served as the India GCC single-point owner for Facilities Management and Corporate Real Estate, aligned with GSK's global WREF strategy, governance model, and performance standards.</li>
-                                <li>Accountable for workplace strategy execution, operating model design, financial governance, compliance outcomes, and stakeholder management, with direct interface to global leadership teams.</li>
-                                <li>Led end-to-end Facilities Management and Corporate Real Estate operations for the India GCC, supporting 3,000+ employees across corporate offices and branch locations.</li>
-                                <li>Managed annual CAPEX and OPEX budgets of approximately USD 7 million, ensuring strong financial governance, forecast accuracy, and cost control.</li>
-                                <li>Onboarded and integrated 40 branch offices into the WREF portfolio, standardizing FM and CRE operations, governance frameworks, and service delivery models across India.</li>
-                                <li>Led and developed a high-performing team of 20 direct reports and 100+ indirect resources, including IFM partners and service providers, driving accountability and consistent service performance.</li>
-                                <li>Governed IFM service providers (CBRE, JLL, Sodexo and G4S) across hard services, soft services, security, transport, cafeteria, and workplace support, using SLA and KPI-driven performance management.</li>
-                                <li>Strengthened governance across EHS, statutory compliance, risk management, admin services, and workplace support functions, achieving 100% statutory and audit compliance with zero major non-compliance.</li>
-                                <li>Led enterprise-wide Business Continuity Planning (BCP) and crisis response, ensuring operational resilience during COVID-19 and other business disruptions.</li>
-                                <li>Implemented CAFM and IWMS platforms, automated maintenance workflows, smart building capabilities, and occupancy analytics to improve operational visibility and efficiency.</li>
-                                <li>Executed capital projects including refurbishments, space reconfigurations, hybrid workplace enhancements, and technology upgrades while maintaining uninterrupted business operations.</li>
-                                <li>Delivered year-on-year cost optimization through vendor consolidation, contract restructuring, and process standardization.</li>
+                            <p class="profession-role scroll-animate scroll-animate-delay-1">Manager and Site Lead – Workplace Real Estate & Facilities Management</p>
+                            <ul class="profession-description scroll-animate scroll-animate-delay-2">
+                                <li>GSK did not have a Global Capability Centre in India and no established model to follow. I designed and operationalized the entire Workplace Real Estate and Facilities function from the ground up, creating what became the operational standard for GSK's India portfolio.</li>
+                                <li>Over four years, the scope grew to 2,500+ employees and an annual budget of $5 million USD. Compliance was non-negotiable. The performance framework I put in place is still in use today.</li>
+                                <li>What made this role genuinely difficult was not the scale or the complexity alone it was the precision required at every stage of operations, while the business continued to grow around it.</li>
                             </ul>
                         </div>
                     </div>
-                    <div class="profession-item scroll-animate scroll-animate-delay-3">
+                    <div class="profession-item">
                         <div class="timeline-dot"></div>
                         <div class="profession-content">
-                            <div class="profession-header">
+                            <div class="profession-header scroll-animate">
                                 <h4 class="profession-company">Delphi Technologies</h4>
                                 <span class="profession-period">September 2018 – August 2020</span>
                             </div>
-                            <p class="profession-role">Facilities Leader – Technical Center India</p>
-                            <ul class="profession-description">
-                                <li>Established Facilities and Administration operating model for Delphi Technical Center India from inception.</li>
-                                <li>Managed a 75,000 sq. ft. technical facility supporting 1,000+ employees across engineering and powertrain divisions.</li>
-                                <li>Oversaw operations and maintenance of HVAC, electrical, fire, and building systems ensuring high uptime and safety.</li>
-                                <li>Led EHS programs, contractor safety protocols, and statutory compliance across all facility operations.</li>
-                                <li>Delivered cost efficiencies through vendor negotiations, resource optimization, and improved service delivery models.</li>
+                            <p class="profession-role scroll-animate scroll-animate-delay-1">Facilities Leader – Technical Center India</p>
+                            <ul class="profession-description scroll-animate scroll-animate-delay-2">
+                                <li>Engineering environments tolerate no operational margin for error. At Delphi's Technical Center, I was accountable for the infrastructure that kept a precision workplace running, HVAC, electrical, fire systems, and critical building services with zero unplanned downtime across my entire tenure.</li>
+                                <li>I also led the EHS governance framework, achieving zero reportable incidents. In facilities management, that number represents hundreds of daily decisions made correctly.</li>
+                                
                             </ul>
                         </div>
                     </div>
-                    <div class="profession-item scroll-animate scroll-animate-delay-4">
+                    <div class="profession-item">
                         <div class="timeline-dot"></div>
                         <div class="profession-content">
-                            <div class="profession-header">
+                            <div class="profession-header scroll-animate">
                                 <h4 class="profession-company">Viacom18 Media Pvt Ltd</h4>
                                 <span class="profession-period">November 2016 – September 2018</span>
                             </div>
-                            <p class="profession-role">Assistant Manager – Facilities and Corporate Services</p>
-                            <ul class="profession-description">
-                                <li>Established and managed Bengaluru facilities operations as the first Facilities Manager.</li>
-                                <li>Executed new office rollouts including a 150-seat setup for VOOT at CoWrks, covering space planning, logistics, and onboarding.</li>
-                                <li>Managed housekeeping, security, cafeteria, transport, and soft services ensuring smooth daily operations.</li>
-                                <li>Owned CAPEX and OPEX budget governance up to 20 Crores.</li>
-                                <li>Led employee engagement initiatives, internal events, and workplace activation programs.</li>
+                            <p class="profession-role scroll-animate scroll-animate-delay-1">Assistant Manager – Facilities and Corporate Services</p>
+                            <ul class="profession-description scroll-animate scroll-animate-delay-2">
+                                <li>Viacom18 taught me operational velocity. Establishing Bengaluru facilities, leading simultaneous office rollouts across cities, and executing high-volume events under compressed timelines demanded a different kind of discipline one where speed and precision had to coexist.</li>
+                                <li>Managing high-profile stakeholder engagements also sharpened something less quantifiable: judgement under pressure, in environments where the cost of error is visible and immediate.</li>
+                                
                             </ul>
                         </div>
                     </div>
-                    <div class="profession-item scroll-animate scroll-animate-delay-1">
+                    <div class="profession-item">
                         <div class="timeline-dot"></div>
                         <div class="profession-content">
-                            <div class="profession-header">
+                            <div class="profession-header scroll-animate">
                                 <h4 class="profession-company">Dun & Bradstreet Information Services</h4>
                                 <span class="profession-period">August 2010 – October 2016</span>
                             </div>
-                            <p class="profession-role">Assistant Manager – Facilities and Administration</p>
-                            <ul class="profession-description">
-                                <li>Managed facilities and administration operations for Bengaluru and Hyderabad offices.</li>
-                                <li>Led facility helpdesk operations covering housekeeping, technical maintenance, cafeteria, pest control, and vendor coordination.</li>
-                                <li>Managed travel, guest house operations, warehouse management, and vendor invoice processing.</li>
+                            <p class="profession-role scroll-animate scroll-animate-delay-1">Assistant Manager – Facilities and Administration</p>
+                            <ul class="profession-description scroll-animate scroll-animate-delay-2">
+                                <li>I joined Dun & Bradstreet at a moment of real instability, the administration function had broken down, trust had been lost, and the organisation needed someone who could restore both operational efficiency and financial integrity from the ground up. That became my mandate.</li>
+                                <li>Over six years across Bengaluru and Hyderabad, I rebuilt the function into something the business could genuinely rely on, transparent financial controls, accountable vendor relationships, and consistent service delivery that held its standard without supervision. When an organisation trusts you with its operations after a breakdown, and you leave it stronger than you found it, that means something.</li>
                             </ul>
                         </div>
                     </div>
-                    <div class="profession-item scroll-animate scroll-animate-delay-2">
+                    <div class="profession-item">
                         <div class="timeline-dot"></div>
                         <div class="profession-content">
-                            <div class="profession-header">
+                            <div class="profession-header scroll-animate">
                                 <h4 class="profession-company">Aditya Birla Minacs</h4>
                                 <span class="profession-period">May 2008 – May 2010</span>
                             </div>
-                            <p class="profession-role">Executive Administration</p>
-                            <ul class="profession-description">
-                                <li>Managed administrative operations and facilities support, ensuring smooth day-to-day operations and efficient workplace management.</li>
+                            <p class="profession-role scroll-animate scroll-animate-delay-1">Executive Administration</p>
+                            <ul class="profession-description scroll-animate scroll-animate-delay-2">
+                                <li>This is where I learned to work. Facilities administration at this level is detailed, demanding, and largely invisible when done well. I did it well , and that invisibility became my first professional standard.</li>
+                                
                             </ul>
                         </div>
                     </div>
@@ -265,116 +232,30 @@
             </section>
 
             <!-- Certifications Section -->
-            <section class="certifications-section scroll-animate">
-                <h3 class="section-title-with-lines">
+            <section class="certifications-section animate-children">
+                <h3 class="section-title-with-lines scroll-animate">
                     <span class="line-left"></span>
                     <span class="title-text">Certifications</span>
                     <span class="line-right"></span>
                 </h3>
                 <div class="certifications-grid">
-                    <div class="certification-item scroll-animate scroll-animate-delay-1">
-                        <div class="certification-icon">
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                                <line x1="16" y1="13" x2="8" y2="13"></line>
-                                <line x1="16" y1="17" x2="8" y2="17"></line>
-                                <polyline points="10 9 9 9 8 9"></polyline>
-                            </svg>
-                        </div>
-                        <h5 class="certification-name">Certification Name</h5>
-                        <p class="certification-info">Certification details and information go here.</p>
+                    <div class="certification-item">
+                        <button type="button" class="certification-image-link scroll-animate" data-cert-src="assets/certificate1.JPEG" data-cert-title="WELL AP" aria-label="View WELL AP certificate">
+                            <img src="assets/certificate1.JPEG" alt="WELL AP">
+                        </button>
+                        <h5 class="certification-name">WELL AP</h5>
                     </div>
-                    <div class="certification-item scroll-animate scroll-animate-delay-2">
-                        <div class="certification-icon">
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                                <line x1="16" y1="13" x2="8" y2="13"></line>
-                                <line x1="16" y1="17" x2="8" y2="17"></line>
-                                <polyline points="10 9 9 9 8 9"></polyline>
-                            </svg>
-                        </div>
-                        <h5 class="certification-name">Certification Name</h5>
-                        <p class="certification-info">Certification details and information go here.</p>
+                    <div class="certification-item">
+                        <button type="button" class="certification-image-link scroll-animate" data-cert-src="assets/certificate2.JPEG" data-cert-title="SFP" aria-label="View SFP certificate">
+                            <img src="assets/certificate2.JPEG" alt="SFP - Sustainability Facility Professional">
+                        </button>
+                        <h5 class="certification-name">SFP</h5>
                     </div>
-                    <div class="certification-item scroll-animate scroll-animate-delay-3">
-                        <div class="certification-icon">
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                                <line x1="16" y1="13" x2="8" y2="13"></line>
-                                <line x1="16" y1="17" x2="8" y2="17"></line>
-                                <polyline points="10 9 9 9 8 9"></polyline>
-                            </svg>
-                        </div>
-                        <h5 class="certification-name">Certification Name</h5>
-                        <p class="certification-info">Certification details and information go here.</p>
-                    </div>
-                    <div class="certification-item scroll-animate scroll-animate-delay-4">
-                        <div class="certification-icon">
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                                <line x1="16" y1="13" x2="8" y2="13"></line>
-                                <line x1="16" y1="17" x2="8" y2="17"></line>
-                                <polyline points="10 9 9 9 8 9"></polyline>
-                            </svg>
-                        </div>
-                        <h5 class="certification-name">Certification Name</h5>
-                        <p class="certification-info">Certification details and information go here.</p>
-                    </div>
-                    <div class="certification-item scroll-animate scroll-animate-delay-1">
-                        <div class="certification-icon">
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                                <line x1="16" y1="13" x2="8" y2="13"></line>
-                                <line x1="16" y1="17" x2="8" y2="17"></line>
-                                <polyline points="10 9 9 9 8 9"></polyline>
-                            </svg>
-                        </div>
-                        <h5 class="certification-name">Certification Name</h5>
-                        <p class="certification-info">Certification details and information go here.</p>
-                    </div>
-                    <div class="certification-item scroll-animate scroll-animate-delay-2">
-                        <div class="certification-icon">
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                                <line x1="16" y1="13" x2="8" y2="13"></line>
-                                <line x1="16" y1="17" x2="8" y2="17"></line>
-                                <polyline points="10 9 9 9 8 9"></polyline>
-                            </svg>
-                        </div>
-                        <h5 class="certification-name">Certification Name</h5>
-                        <p class="certification-info">Certification details and information go here.</p>
-                    </div>
-                    <div class="certification-item scroll-animate scroll-animate-delay-3">
-                        <div class="certification-icon">
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                                <line x1="16" y1="13" x2="8" y2="13"></line>
-                                <line x1="16" y1="17" x2="8" y2="17"></line>
-                                <polyline points="10 9 9 9 8 9"></polyline>
-                            </svg>
-                        </div>
-                        <h5 class="certification-name">Certification Name</h5>
-                        <p class="certification-info">Certification details and information go here.</p>
-                    </div>
-                    <div class="certification-item scroll-animate scroll-animate-delay-4">
-                        <div class="certification-icon">
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                                <line x1="16" y1="13" x2="8" y2="13"></line>
-                                <line x1="16" y1="17" x2="8" y2="17"></line>
-                                <polyline points="10 9 9 9 8 9"></polyline>
-                            </svg>
-                        </div>
-                        <h5 class="certification-name">Certification Name</h5>
-                        <p class="certification-info">Certification details and information go here.</p>
+                    <div class="certification-item">
+                        <button type="button" class="certification-image-link scroll-animate" data-cert-src="assets/certificate3.JPEG" data-cert-title="IGBC" aria-label="View IGBC certificate">
+                            <img src="assets/certificate3.JPEG" alt="IGBC">
+                        </button>
+                        <h5 class="certification-name">IGBC</h5>
                     </div>
                 </div>
             </section>
@@ -382,7 +263,7 @@
             <!-- Footer -->
             <footer class="footer">
                 <div class="footer-content">
-                    <p class="footer-left">© Prasad ND 2023. All rights reserved.</p>
+                    <p class="footer-left">© Prasad ND 2026. All rights reserved.</p>
                     <p class="footer-right">Developed by: <a href="https://rishitechsolutions.in">Rishi Tech Solutions</a></p>
                 </div>
             </footer>
@@ -390,7 +271,17 @@
 
         <!-- Right Side - Fixed Image (30%) -->
         <div class="right-image">
-            <div class="image-placeholder"></div>
+            <div class="image-placeholder" style="background-image: url('assets/profession.jpg');"></div>
+        </div>
+    </div>
+
+    <!-- Certificate Lightbox Modal -->
+    <div class="cert-lightbox" id="certLightbox" aria-hidden="true">
+        <div class="cert-lightbox-backdrop"></div>
+        <div class="cert-lightbox-content">
+            <button type="button" class="cert-lightbox-close" aria-label="Close">&times;</button>
+            <img src="" alt="" class="cert-lightbox-image">
+            <h4 class="cert-lightbox-title"></h4>
         </div>
     </div>
 

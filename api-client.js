@@ -204,6 +204,10 @@
             const articleElement = createArticleElement(article, index);
             articlesGrid.appendChild(articleElement);
         });
+        // Observe new elements for scroll animation
+        if (typeof window.initScrollAnimations === 'function') {
+            window.initScrollAnimations();
+        }
     }
 
     /**
@@ -211,7 +215,7 @@
      */
     function createArticleElement(article, index) {
         const articleItem = document.createElement('article');
-        articleItem.className = `beyond-article-item scroll-animate scroll-animate-delay-${index + 1}`;
+        articleItem.className = 'beyond-article-item';
 
         // Format date - use article.date if available, otherwise use created_at
         let formattedDate;
@@ -249,7 +253,7 @@
         }
 
         articleItem.innerHTML = `
-            <div class="beyond-article-image">
+            <div class="beyond-article-image scroll-animate">
                 <img src="${imageUrl}" alt="${article.title || 'Article'}">
                 <div class="article-image-overlay">
                     <span class="article-meta">${category} • ${formattedDate}</span>
@@ -262,8 +266,8 @@
                 </div>
             </div>
             <div class="beyond-article-content">
-                <h4>${article.title || 'Article Title'}</h4>
-                <p class="beyond-article-excerpt">${article.excerpt || article.content?.substring(0, 150) || 'Brief description or excerpt of the article goes here...'}</p>
+                <h4 class="scroll-animate scroll-animate-delay-1">${article.title || 'Article Title'}</h4>
+                <p class="beyond-article-excerpt scroll-animate scroll-animate-delay-2">${article.excerpt || article.content?.substring(0, 150) || 'Brief description or excerpt of the article goes here...'}</p>
             </div>
         `;
 
@@ -274,6 +278,11 @@
      * Initialize - Load all dynamic content
      */
     async function init() {
+        // Skip API calls when admin panel is disconnected
+        if (window.API_DISABLED) {
+            return;
+        }
+
         // Load settings and social links on all pages
         await Promise.all([
             loadSettings(),

@@ -4,12 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beyond Work</title>
+    <link rel="icon" type="image/jpeg" href="assets/newlogo.JPEG">
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&family=Lexend+Giga:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Page Loader -->
+    <div class="page-loader" id="pageLoader">
+        <div class="page-loader-line"></div>
+        <div class="page-loader-content">
+            <div class="page-loader-dots">
+                <span class="page-loader-dot"></span>
+                <span class="page-loader-dot"></span>
+                <span class="page-loader-dot"></span>
+                <span class="page-loader-dot"></span>
+            </div>
+        </div>
+    </div>
+
     <!-- Navigation Menu -->
     <nav class="navbar">
         <div class="nav-container">
@@ -21,9 +35,10 @@
                 <li><a href="education.html" class="nav-link">EDUCATION</a></li>
                 <li><a href="profession.html" class="nav-link">PROFESSION</a></li>
                 <li><a href="beyond-work.html" class="nav-link">BEYOND WORK</a></li>
+                <li><a href="https://www.youtube.com/@learnwithprasadnd" class="nav-link" target="_blank" rel="noopener noreferrer">LEARN WITH PRASAD</a></li>
                 <li><a href="contact.html" class="nav-link">CONTACT</a></li>
             </ul>
-            <a href="mailto:prasad.nd01@gmail.com" class="nav-icon-box" aria-label="Email">
+            <a href="mailto:Prasad.nd.2026@gmail.com" class="nav-icon-box" aria-label="Email">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                     <polyline points="22,6 12,13 2,6"></polyline>
@@ -48,34 +63,10 @@
         <div class="left-sidebar">
             <div class="sidebar-content">
                 <div class="current-page">
+                    <span class="page-indicator-dot"></span>
                     <span class="page-indicator">BEYOND WORK</span>
                 </div>
-                <div class="social-icons">
-                    <a href="#" class="social-icon" aria-label="Facebook">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
-                        </svg>
-                    </a>
-                    <a href="#" class="social-icon" aria-label="Instagram">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                        </svg>
-                    </a>
-                    <a href="#" class="social-icon" aria-label="LinkedIn">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-                            <rect x="2" y="9" width="4" height="12"></rect>
-                            <circle cx="4" cy="4" r="2"></circle>
-                        </svg>
-                    </a>
-                    <a href="#" class="social-icon" aria-label="Twitter">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
-                        </svg>
-                    </a>
-                </div>
+                
             </div>
         </div>
 
@@ -83,7 +74,7 @@
         <div class="left-content">
             <!-- Beyond Work Section -->
             <section class="beyond-work-section">
-                <p class="beyond-work-quote scroll-animate">"Life is not just about work, it's about the experiences that shape us."</p>
+                <p class="beyond-work-quote scroll-animate">"Life is not just about work, it's about the experiences that shape us"</p>
                 <p class="beyond-work-quote-author scroll-animate scroll-animate-delay-1">Anonymous</p>
                 <h3 class="section-title-with-lines scroll-animate scroll-animate-delay-2">
                     <span class="line-left"></span>
@@ -93,13 +84,22 @@
             </section>
 
             <!-- Articles Section -->
-            <section class="beyond-articles-section scroll-animate">
+            <section class="beyond-articles-section animate-children">
+                <div class="beyond-category-filter">
+                    <a href="beyond-work.html" class="beyond-category-btn" data-category="">All</a>
+                    <a href="beyond-work.html?category=Places" class="beyond-category-btn" data-category="Places">Places</a>
+                    <a href="beyond-work.html?category=Relationships" class="beyond-category-btn" data-category="Relationships">Relationships</a>
+                    <a href="beyond-work.html?category=Adventures" class="beyond-category-btn" data-category="Adventures">Adventures</a>
+                    <a href="beyond-work.html?category=Savors" class="beyond-category-btn" data-category="Savors">Savors</a>
+                    <a href="beyond-work.html?category=Artifacts" class="beyond-category-btn" data-category="Artifacts">Artifacts</a>
+                    <a href="beyond-work.html?category=Dialogues" class="beyond-category-btn" data-category="Dialogues">Dialogues</a>
+                </div>
                 <div class="beyond-articles-grid">
-                    <article class="beyond-article-item scroll-animate scroll-animate-delay-1">
-                        <div class="beyond-article-image">
-                            <img src="assets/education.jpg" alt="Education Article">
+                    <a href="articles/happy-republic-day.html" class="beyond-article-item" data-category="Dialogues">
+                        <div class="beyond-article-image scroll-animate">
+                            <img src="assets/republic day article.jpeg" alt="Happy Republic Day">
                             <div class="article-image-overlay">
-                                <span class="article-meta">Education • Dec 16, 2025</span>
+                                <span class="article-meta">Dialogues • Jan 26, 2026</span>
                             </div>
                             <div class="article-hover-icon">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -109,15 +109,15 @@
                             </div>
                         </div>
                         <div class="beyond-article-content">
-                            <h4>Article Title</h4>
-                            <p class="beyond-article-excerpt">Brief description or excerpt of the article goes here. This can be about travel, hobbies, experiences, or any personal interests...</p>
+                            <h4 class="scroll-animate scroll-animate-delay-1">Happy Republic Day</h4>
+                            <p class="beyond-article-excerpt scroll-animate scroll-animate-delay-2">When I was preparing for my civil services examinations, the Preamble was the first thing we read before starting every class. In just one paragraph, it captures the spirit, values, and intent of our entire Constitution, and reminds us what kind of nation we aspired to build.</p>
                         </div>
-                    </article>
-                    <article class="beyond-article-item scroll-animate scroll-animate-delay-2">
-                        <div class="beyond-article-image">
-                            <img src="assets/travel.jpg" alt="Travel Article">
+                    </a>
+                    <a href="articles/motivation.html" class="beyond-article-item" data-category="Dialogues">
+                        <div class="beyond-article-image scroll-animate">
+                            <img src="assets/motivation article.jpeg" alt="Motivation">
                             <div class="article-image-overlay">
-                                <span class="article-meta">Travel • Dec 16, 2025</span>
+                                <span class="article-meta">Dialogues • Feb 13, 2026</span>
                             </div>
                             <div class="article-hover-icon">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -127,15 +127,15 @@
                             </div>
                         </div>
                         <div class="beyond-article-content">
-                            <h4>Article Title</h4>
-                            <p class="beyond-article-excerpt">Brief description or excerpt of the article goes here. This can be about travel, hobbies, experiences, or any personal interests...</p>
+                            <h4 class="scroll-animate scroll-animate-delay-1">Motivation</h4>
+                            <p class="beyond-article-excerpt scroll-animate scroll-animate-delay-2">Motivation appears in numbers, but begins inside people. I am currently doing my PhD with motivation as my research topic. Two philosophical papers—Thomas Nagel's bat and Frank Jackson's Mary's Room—changed how I think about motivation as a human experience that must be lived, not just observed.</p>
                         </div>
-                    </article>
-                    <article class="beyond-article-item scroll-animate scroll-animate-delay-3">
-                        <div class="beyond-article-image">
-                            <img src="assets/hobbies.jpg" alt="Hobbies Article">
+                    </a>
+                    <a href="articles/lunch-at-peshawri-chennai.html" class="beyond-article-item" data-category="Savors">
+                        <div class="beyond-article-image scroll-animate">
+                            <img src="assets/article 3/lunch 12.jpeg" alt="Lunch at Peshawri, Chennai">
                             <div class="article-image-overlay">
-                                <span class="article-meta">Hobbies • Dec 16, 2025</span>
+                                <span class="article-meta">Savors • Feb 13, 2026</span>
                             </div>
                             <div class="article-hover-icon">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -145,15 +145,15 @@
                             </div>
                         </div>
                         <div class="beyond-article-content">
-                            <h4>Article Title</h4>
-                            <p class="beyond-article-excerpt">Brief description or excerpt of the article goes here. This can be about travel, hobbies, experiences, or any personal interests...</p>
+                            <h4 class="scroll-animate scroll-animate-delay-1">Lunch at Peshawri, Chennai</h4>
+                            <p class="beyond-article-excerpt scroll-animate scroll-animate-delay-2">Some lunches are routine. Some stay with you. Authentic North-West Frontier cuisine, tandoori grilled meat, and a memorable afternoon that went from Peshawri to Fabelle chocolate—savouring the people, the conversations, and the small details.</p>
                         </div>
-                    </article>
-                    <article class="beyond-article-item scroll-animate scroll-animate-delay-4">
-                        <div class="beyond-article-image">
-                            <img src="assets/travel2.jpg" alt="Experience Article">
+                    </a>
+                    <a href="articles/malpuri-that-made-me-wait.html" class="beyond-article-item" data-category="Savors">
+                        <div class="beyond-article-image scroll-animate">
+                            <img src="assets/article 4/article 4 -6.jpeg" alt="The Malpuri That Made Me Wait">
                             <div class="article-image-overlay">
-                                <span class="article-meta">Experience • Dec 16, 2025</span>
+                                <span class="article-meta">Savors • Feb 13, 2026</span>
                             </div>
                             <div class="article-hover-icon">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -163,17 +163,35 @@
                             </div>
                         </div>
                         <div class="beyond-article-content">
-                            <h4>Article Title</h4>
-                            <p class="beyond-article-excerpt">Brief description or excerpt of the article goes here. This can be about travel, hobbies, experiences, or any personal interests...</p>
+                            <h4 class="scroll-animate scroll-animate-delay-1">The Malpuri That Made Me Wait, and It Was Worth It</h4>
+                            <p class="beyond-article-excerpt scroll-animate scroll-animate-delay-2">I travelled nearly 570 km from Bengaluru to Guntur just to eat authentic Malpuri at Subhani Malpoori. A 30-minute wait, watching it prepared from scratch, and that first bite—crisp, warm, and unforgettable. Sometimes Savours is about travelling miles for a simple dish.</p>
                         </div>
-                    </article>
+                    </a>
+                    <a href="articles/ilaiyaraaja-live-concert.html" class="beyond-article-item" data-category="Adventures">
+                        <div class="beyond-article-image scroll-animate">
+                            <img src="assets/article 5/article 5 -5.jpeg" alt="The Night I Finally Saw Ilaiyaraaja Live">
+                            <div class="article-image-overlay">
+                                <span class="article-meta">Adventures • Feb 13, 2026</span>
+                            </div>
+                            <div class="article-hover-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M12 8l4 4-4 4M8 12h8"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="beyond-article-content">
+                            <h4 class="scroll-animate scroll-animate-delay-1">The Night I Finally Saw Ilaiyaraaja Live</h4>
+                            <p class="beyond-article-excerpt scroll-animate scroll-animate-delay-2">For years I wanted to attend his concert. When Ilaiyaraaja 50 came to Bangalore, I booked a VVIP ticket the moment they went live. That evening—watching him conduct, compose, and perform—felt like a part of my childhood standing right in front of me.</p>
+                        </div>
+                    </a>
                 </div>
             </section>
 
             <!-- Footer -->
             <footer class="footer">
                 <div class="footer-content">
-                    <p class="footer-left">© Prasad ND 2023. All rights reserved.</p>
+                    <p class="footer-left">© Prasad ND 2026. All rights reserved.</p>
                     <p class="footer-right">Developed by: <a href="https://rishitechsolutions.in">Rishi Tech Solutions</a></p>
                 </div>
             </footer>
@@ -181,7 +199,7 @@
 
         <!-- Right Side - Fixed Image (30%) -->
         <div class="right-image">
-            <div class="image-placeholder"></div>
+            <div class="image-placeholder" style="background-image: url('assets/beyond work.jpg');"></div>
         </div>
     </div>
 

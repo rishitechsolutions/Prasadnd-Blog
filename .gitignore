@@ -1,19 +1,17 @@
 # Dependencies
 node_modules/
-admin/node_modules/
+
 
 # Database files
 *.sqlite
 *.sqlite3
 *.db
-admin/*.sqlite
-admin/*.sqlite3
-admin/*.db
+
 
 # Environment variables
 .env
 .env.local
-admin/.env
+
 
 # Logs
 *.log

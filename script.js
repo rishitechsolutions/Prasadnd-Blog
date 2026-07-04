@@ -15,7 +15,9 @@ document.querySelectorAll('.nav-link').forEach(link => {
 
 // Set active nav link based on current page
 const setActiveNavLink = () => {
-    let currentPage = window.location.pathname.split('/').pop() || '';
+    const pathname = window.location.pathname || '';
+    let currentPage = pathname.split('/').pop() || '';
+    const isInArticles = pathname.includes('/articles/');
     // Handle root path or empty path (home page)
     if (currentPage === '' || currentPage === '/' || currentPage === 'index.html') {
         currentPage = 'index.html';
@@ -28,10 +30,12 @@ const setActiveNavLink = () => {
         const linkHref = link.getAttribute('href');
         const linkPage = linkHref.split('/').pop();
         
-        // Check if this link matches the current page
-        // Special case: if current page is index.html or empty, match with index.html link
-        if (linkPage === currentPage || 
-            ((currentPage === 'index.html' || currentPage === '') && linkPage === 'index.html')) {
+        // Article pages count as Beyond Work
+        const matchesBeyondWork = linkPage === 'beyond-work.html' && (currentPage === 'beyond-work.html' || isInArticles);
+        const matchesCurrent = linkPage === currentPage || 
+            ((currentPage === 'index.html' || currentPage === '') && linkPage === 'index.html');
+        
+        if (matchesCurrent || matchesBeyondWork) {
             link.classList.add('active');
         }
     });
@@ -40,6 +44,14 @@ const setActiveNavLink = () => {
 // Set active nav link on page load
 document.addEventListener('DOMContentLoaded', () => {
     setActiveNavLink();
+});
+
+// Page Loader - hide when page is fully loaded
+window.addEventListener('load', () => {
+    const pageLoader = document.getElementById('pageLoader');
+    if (pageLoader) {
+        pageLoader.classList.add('loaded');
+    }
 });
 
 // Smooth Scrolling
@@ -66,28 +78,6 @@ window.addEventListener('scroll', () => {
         backToTopBtn.classList.remove('show');
     }
 });
-
-// Who I Am: reveal profile on scroll (scroll-down indicator fades, profile shows)
-const heroProfileReveal = document.querySelector('.hero-profile-reveal');
-
-if (heroProfileReveal) {
-    const revealOnScroll = () => {
-        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-        const scrollContainer = document.querySelector('.left-content');
-        const scrollTop = scrollContainer ? scrollContainer.scrollTop : scrollY;
-        const threshold = 60;
-        if (scrollTop > threshold || scrollY > threshold) {
-            heroProfileReveal.classList.add('revealed');
-        } else {
-            heroProfileReveal.classList.remove('revealed');
-        }
-    };
-    window.addEventListener('scroll', revealOnScroll, { passive: true });
-    if (document.querySelector('.left-content')) {
-        document.querySelector('.left-content').addEventListener('scroll', revealOnScroll, { passive: true });
-    }
-    revealOnScroll();
-}
 
 backToTopBtn.addEventListener('click', () => {
     window.scrollTo({
@@ -194,36 +184,33 @@ const animateSkills = () => {
     });
 };
 
-// Scroll Animation Observer
+// Scroll Animation Observer - only animate when element scrolls into view (not on page load)
 const initScrollAnimations = () => {
     const animatedElements = document.querySelectorAll('.scroll-animate');
     
-    // Detect mobile device
     const isMobile = window.innerWidth <= 768;
     
-    // Get the correct root element for scrolling
-    // On desktop, content scrolls in .left-content, on mobile it's window
-    const leftContent = document.querySelector('.left-content');
-    const scrollRoot = (leftContent && !isMobile) ? leftContent : null;
-    
+    // Always use viewport (null) - page scrolls via window, not left-content
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('animated');
-                // Optional: Unobserve after animation to improve performance
                 observer.unobserve(entry.target);
             }
         });
     }, {
-        root: scrollRoot,
-        threshold: isMobile ? 0.05 : 0.1,
-        rootMargin: isMobile ? '0px 0px -10% 0px' : '0px 0px -50px 0px'
+        root: null, // viewport
+        threshold: 0.1, // element must be at least 10% visible
+        rootMargin: '0px 0px -25% 0px' // trigger only when element has scrolled into view (top 75% of viewport)
     });
 
     animatedElements.forEach(element => {
         observer.observe(element);
     });
 };
+
+// Expose for dynamic content (e.g. api-client loaded articles)
+window.initScrollAnimations = initScrollAnimations;
 
 // Initialize animations when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
@@ -425,17 +412,11 @@ const initReviewsSlider = () => {
     // setInterval(nextSlide, 5000);
 };
 
-// Contact Form Handler
+// Contact Form Handler - Web3Forms (no backend, emails go to your inbox)
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
     contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
-        // Get form data
-        const formData = new FormData(contactForm);
-        const name = formData.get('name');
-        const email = formData.get('email');
-        const message = formData.get('message');
         
         const submitButton = contactForm.querySelector('button[type="submit"]');
         const originalText = submitButton.textContent;
@@ -443,27 +424,25 @@ if (contactForm) {
         submitButton.textContent = 'Sending...';
         
         try {
-            // Get API base URL from config
-            const API_BASE_URL = window.API_BASE_URL || 'https://portfolio-website-ynx2.onrender.com';
-            
-            const response = await fetch(`${API_BASE_URL}/api/contact`, {
+            const formData = new FormData(contactForm);
+            const response = await fetch(contactForm.action, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, message })
+                body: formData,
+                headers: { 'Accept': 'application/json' }
             });
             
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
             
-            if (data.success) {
-                // Show success message
+            if (response.ok && data.success) {
                 alert('Thank you for your message! We will get back to you soon.');
                 contactForm.reset();
             } else {
-                alert('There was an error sending your message. Please try again.');
+                const errMsg = data.body?.message || data.message || data.error || 'There was an error sending your message. Please try again.';
+                alert(errMsg);
             }
         } catch (error) {
             console.error('Error submitting form:', error);
-            alert('There was an error sending your message. Please try again.');
+            alert('There was an error sending your message. Please try again or email directly at Prasad.nd.2026@gmail.com');
         } finally {
             submitButton.disabled = false;
             submitButton.textContent = originalText;
@@ -471,4 +450,159 @@ if (contactForm) {
     });
 }
 
+// Certificate Lightbox - open image inside website with close option
+const certLightbox = document.getElementById('certLightbox');
+const certImageLinks = document.querySelectorAll('.certification-image-link');
+
+if (certLightbox && certImageLinks.length > 0) {
+    const lightboxImage = certLightbox.querySelector('.cert-lightbox-image');
+    const lightboxTitle = certLightbox.querySelector('.cert-lightbox-title');
+    const lightboxClose = certLightbox.querySelector('.cert-lightbox-close');
+    const lightboxBackdrop = certLightbox.querySelector('.cert-lightbox-backdrop');
+
+    const openLightbox = (src, title) => {
+        lightboxImage.src = src;
+        lightboxImage.alt = title;
+        lightboxTitle.textContent = title;
+        certLightbox.classList.add('active');
+        certLightbox.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    };
+
+    const closeLightbox = () => {
+        certLightbox.classList.remove('active');
+        certLightbox.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    };
+
+    certImageLinks.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const src = btn.getAttribute('data-cert-src');
+            const title = btn.getAttribute('data-cert-title');
+            if (src && title) openLightbox(src, title);
+        });
+    });
+
+    if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+    if (lightboxBackdrop) lightboxBackdrop.addEventListener('click', closeLightbox);
+
+    certLightbox.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeLightbox();
+    });
+}
+
+// Article Image Lightbox - clickable images in articles (like certifications)
+const articleLightbox = document.getElementById('articleLightbox');
+const articleImages = document.querySelectorAll('.article-featured-image img, .article-gallery-grid img');
+
+if (articleLightbox && articleImages.length > 0) {
+    const lightboxImage = articleLightbox.querySelector('.cert-lightbox-image');
+    const lightboxTitle = articleLightbox.querySelector('.cert-lightbox-title');
+    const lightboxClose = articleLightbox.querySelector('.cert-lightbox-close');
+    const lightboxBackdrop = articleLightbox.querySelector('.cert-lightbox-backdrop');
+
+    const openArticleLightbox = (src, title) => {
+        lightboxImage.src = src;
+        lightboxImage.alt = title;
+        lightboxTitle.textContent = title || 'Image';
+        articleLightbox.classList.add('active');
+        articleLightbox.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    };
+
+    const closeArticleLightbox = () => {
+        articleLightbox.classList.remove('active');
+        articleLightbox.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    };
+
+    const handleEscape = (e) => {
+        if (e.key === 'Escape') {
+            closeArticleLightbox();
+            document.removeEventListener('keydown', handleEscape);
+        }
+    };
+
+    const openWithEscape = (src, title) => {
+        openArticleLightbox(src, title);
+        document.addEventListener('keydown', handleEscape);
+    };
+
+    const closeAndCleanup = () => {
+        closeArticleLightbox();
+        document.removeEventListener('keydown', handleEscape);
+    };
+
+    articleImages.forEach(img => {
+        img.style.cursor = 'pointer';
+        img.addEventListener('click', () => {
+            const src = img.src || img.getAttribute('src');
+            const title = img.alt || 'Image';
+            if (src) openWithEscape(src, title);
+        });
+    });
+
+    if (lightboxClose) lightboxClose.addEventListener('click', closeAndCleanup);
+    if (lightboxBackdrop) lightboxBackdrop.addEventListener('click', closeAndCleanup);
+}
+
+// Beyond Work: Category filter from URL
+(function initBeyondCategoryFilter() {
+    const path = window.location.pathname || '';
+    if (!path.includes('beyond-work')) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const category = params.get('category') || '';
+
+    const items = document.querySelectorAll('.beyond-article-item[data-category]');
+    const buttons = document.querySelectorAll('.beyond-category-btn');
+
+    buttons.forEach(btn => {
+        const btnCategory = btn.getAttribute('data-category') || '';
+        btn.classList.toggle('active', btnCategory === category);
+    });
+
+    items.forEach(item => {
+        const itemCategory = item.getAttribute('data-category') || '';
+        const match = !category || itemCategory === category;
+        item.classList.toggle('filtered-out', !match);
+    });
+})();
+
+// Latest Updates: Load the last 2 articles from Beyond Work
+(function loadLatestUpdates() {
+    const grid = document.getElementById('latestUpdatesGrid');
+    if (!grid) return;
+
+    const beyondWorkPath = path.includes('index.html') ? 'beyond-work.html' : 'beyond-work.html';
+    fetch(beyondWorkPath)
+        .then(r => r.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const items = doc.querySelectorAll('.beyond-article-item');
+            const latest = Array.from(items).slice(-2);
+            if (latest.length === 0) return;
+
+            grid.innerHTML = latest.map(item => {
+                const href = item.getAttribute('href') || '#';
+                const metaEl = item.querySelector('.article-meta');
+                const titleEl = item.querySelector('.beyond-article-content h4');
+                const excerptEl = item.querySelector('.beyond-article-excerpt');
+                const meta = metaEl ? metaEl.textContent.trim() : '';
+                const title = titleEl ? titleEl.textContent.trim() : '';
+                const excerpt = excerptEl ? excerptEl.textContent.trim() : '';
+                return `<article class="blog-item">
+                    <p class="blog-meta scroll-animate">${meta}</p>
+                    <h4 class="scroll-animate scroll-animate-delay-1">${title}</h4>
+                    <p class="blog-excerpt scroll-animate scroll-animate-delay-2">${excerpt}</p>
+                    <a href="${href}" class="read-more scroll-animate scroll-animate-delay-3">Read more</a>
+                </article>`;
+            }).join('');
+
+            // Re-init scroll animations for the new elements
+            if (typeof initScrollAnimations === 'function') initScrollAnimations();
+        })
+        .catch(() => { /* Keep static fallback on fetch error */ });
+})();
 
