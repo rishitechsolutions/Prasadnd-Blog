@@ -113,7 +113,7 @@ If you can't connect via GitHub (e.g., private repo on free plan):
 
 ### Option 1: Drag & Drop
 1. In Netlify dashboard, go to **"Sites"**
-2. Drag your project folder (without `node_modules` or `admin/node_modules`)
+2. Drag your project folder (omit any large folders like `node_modules`)
 3. Drop it in the deploy area
 4. ⚠️ **Note:** This is manual - you need to drag & drop each time
 
@@ -132,13 +132,8 @@ If you can't connect via GitHub (e.g., private repo on free plan):
 - ✅ CSS (`styles.css`)
 - ✅ JavaScript (`script.js`)
 - ✅ Assets folder (`assets/`)
-- ❌ **NOT** the `admin/` folder (that's on Render)
 
-### Two Separate Deployments:
-1. **Frontend (Netlify):** Your portfolio website (HTML/CSS/JS)
-2. **Backend (Render):** Your admin dashboard (Node.js server)
-
-They work independently!
+This repository now contains only the frontend. Any backend or admin functionality has been removed from this repo.
 
 ---
 
