@@ -37,5 +37,5 @@ dist/
 build/
 
 # Uploads (optional - uncomment if you don't want to track uploaded files)
-# admin/uploads/*
+# uploads/*
 
