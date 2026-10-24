@@ -1,0 +1,15 @@
+# Append these rules to the EXISTING public_html/.htaccess (do not replace that file:
+# Hostinger may keep its HTTPS-redirect rules there). Put them after any HTTPS redirect.
+# They send public HTML pages through public-page.php so visits are counted and the footer shows the total.
+# If these rules are not installed the site works normally, just without the counter.
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Home page
+RewriteRule ^$ /public-page.php?p=index [L,QSA]
+
+# Public static pages: /index.html, /beyond-work.html, /articles/*.html ...
+RewriteCond %{REQUEST_METHOD} =GET
+RewriteRule ^((?:articles/)?[A-Za-z0-9_-]+)\.html$ /public-page.php?p=$1 [L,QSA]
+</IfModule>

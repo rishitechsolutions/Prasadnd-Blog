@@ -36,6 +36,15 @@ CREATE TABLE admin_password_resets (
     KEY admin_password_resets_admin (admin_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE site_visit_counter (
+    id TINYINT UNSIGNED NOT NULL,
+    total BIGINT UNSIGNED NOT NULL DEFAULT 0,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO site_visit_counter (id, total) VALUES (1, 0);
+
 CREATE TABLE admin_login_attempts (
     username_key CHAR(64) NOT NULL,
     ip_key CHAR(64) NOT NULL,

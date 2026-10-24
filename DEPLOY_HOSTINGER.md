@@ -161,7 +161,17 @@ hPanel → **Advanced → Git**: add `https://github.com/rishitechsolutions/Pras
 - [ ] Uploaded files cannot execute PHP: `https://prasadnd.com/uploads/articles/` shows no listing.
 - [ ] Use a strong, unique admin password and keep the `prasad@prasadnd.com` mailbox protected (it controls password recovery).
 
-## 14. Updating the site later
+## Visit counter (footer "Total Visits")
+
+The footer shows a global, database-backed count of website **sessions** (one per PHP session; refreshes and page-to-page navigation in the same session do not add). Admin, login, password-reset, setup, API, static assets and bots are not counted.
+
+1. **Create the table (once).** phpMyAdmin → your database → **SQL** → run `database/upgrade-visit-counter.sql`. It is safe to re-run and never resets an existing count. (A fresh install already gets it from `schema.sql`.)
+2. **Deploy the files:** `includes/visit-counter.php`, `public-page.php`, `article.php`, and the `deploy/` folder (reference only).
+3. **Add the rewrite rules.** In File Manager open `public_html/.htaccess` (show hidden files), and **append** the contents of `deploy/visit-counter.htaccess` at the end, after any HTTPS-redirect rules. Do not replace the file. Without these rules the site works but the counter and footer total do not appear on the static pages.
+4. **Verify:** open `https://prasadnd.com/` in a private window; the footer should show `| Total Visits: N`. Reload and open other pages: N stays the same. Open a new private window: N increases by 1. Check in phpMyAdmin: `SELECT total FROM site_visit_counter;` matches the footer.
+5. Google Analytics is unchanged and independent; the two numbers will not match exactly.
+
+## Updating the site later
 
 - **File Manager / Git:** upload or **Deploy** the changed files only. Never overwrite `uploads/articles/` (your uploaded images live there) and never overwrite `portfolio-config.php`.
 - Back up the database first: phpMyAdmin → **Export**.

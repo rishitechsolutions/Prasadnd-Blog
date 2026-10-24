@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/includes/admin.php';
+require_once __DIR__ . '/includes/visit-counter.php';
 
 $isPreview = isset($_GET['preview']);
 $article = null;
@@ -50,6 +51,9 @@ $galleryUrls = $article
     : [];
 $content = $article ? clean_article_content((string) $article['content']) : '';
 $statusCode = http_response_code();
+if ($article && !$isPreview && $statusCode === 200) {
+    visit_counter_record();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -127,7 +131,7 @@ $statusCode = http_response_code();
                     <a href="beyond-work.html" class="article-back-link">← Back to Beyond Work</a>
                 </section>
             <?php endif; ?>
-            <footer class="footer"><div class="footer-content"><p class="footer-left">© Prasad ND 2026. All rights reserved.</p><p class="footer-right">Developed by: <a href="https://rishitechsolutions.in" rel="noopener noreferrer">Rishi Tech Solutions</a></p></div></footer>
+            <footer class="footer"><div class="footer-content"><p class="footer-left">© Prasad ND 2026. All rights reserved.<?= visit_counter_footer_text() ?></p><p class="footer-right">Developed by: <a href="https://rishitechsolutions.in" rel="noopener noreferrer">Rishi Tech Solutions</a></p></div></footer>
         </main>
         <div class="right-image"><div class="image-placeholder" style="background-image: url('assets/beyond work.jpg');"></div></div>
     </div>
