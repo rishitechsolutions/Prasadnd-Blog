@@ -22,24 +22,35 @@ try {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    reset_diag('password_reset_request_received');
+    $submittedCsrf = $_POST['csrf_token'] ?? '';
+    if (!is_string($submittedCsrf) || !hash_equals(csrf_token(), $submittedCsrf)) {
+        reset_diag('password_reset_stopped_csrf_failed');
+    }
     require_valid_csrf();
     $ip = (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
     $limitKey = '__admin_reset_request__';
 
     try {
         if (!$mailReady) {
+            reset_diag('password_reset_stopped_mail_not_configured');
             $flash = ['type' => 'error', 'message' => 'Password reset email is not configured on this server. Contact the site owner.'];
         } elseif (login_is_rate_limited($pdo, $limitKey, $ip)) {
+            reset_diag('password_reset_stopped_rate_limited');
             $flash = ['type' => 'error', 'message' => 'Too many reset requests. Wait 15 minutes and try again.'];
         } else {
+            reset_diag('password_reset_validation_passed');
             record_login_failure($pdo, $limitKey, $ip);
             $admin = fixed_admin($pdo);
             if ($admin) {
                 send_admin_reset_email($pdo, $admin);
+            } else {
+                reset_diag('password_reset_stopped_admin_not_found', ['expected_username_configured' => 'yes']);
             }
             $sent = true;
         }
     } catch (Throwable $error) {
+        reset_diag('password_reset_stopped_exception', ['exception' => get_class($error), 'message' => $error->getMessage()]);
         error_log('Admin password reset request failed: ' . $error->getMessage());
         $flash = ['type' => 'error', 'message' => 'Password reset is temporarily unavailable. Please try again later.'];
     }
