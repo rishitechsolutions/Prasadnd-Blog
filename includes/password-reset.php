@@ -8,7 +8,7 @@ const ADMIN_RESET_TOKEN_TTL_MINUTES = 30;
 const ADMIN_RESET_COOLDOWN_SECONDS = 120;
 const ADMIN_RESET_MIN_LENGTH = 8;
 
-// TEMPORARY diagnostics: event names and safe details only (never tokens, URLs, passwords or credentials).
+// Failure-only diagnostics: event names and safe details only (never tokens, URLs, passwords or credentials).
 // Written outside the web root, next to portfolio-config.php.
 function reset_diag(string $event, array $details = []): void
 {
@@ -72,21 +72,13 @@ function send_admin_reset_email(PDO $pdo, array $admin): bool
     $from = (string) $config['mail_from'];
     $headers = "From: Admin Dashboard <{$from}>\r\nContent-Type: text/plain; charset=UTF-8\r\n";
 
-    reset_diag('password_reset_token_created');
-    reset_diag('password_reset_email_send_started', [
-        'function_exists_mail' => function_exists('mail') ? 'yes' : 'no',
-        'sendmail_path' => (string) ini_get('sendmail_path'),
-        'mail_from_domain' => (string) substr(strrchr($from, '@') ?: '', 1),
-    ]);
     $sent = false;
     try {
         $sent = @mail(ADMIN_FIXED_USERNAME, 'Reset your admin password', $body, $headers);
     } catch (Throwable $error) {
         reset_diag('password_reset_email_send_failed', ['exception' => get_class($error), 'message' => $error->getMessage()]);
     }
-    if ($sent) {
-        reset_diag('password_reset_email_send_succeeded', ['note' => 'mail() accepted the message for delivery']);
-    } else {
+    if (!$sent) {
         $last = error_get_last();
         reset_diag('password_reset_email_send_failed', ['php_error' => $last['message'] ?? 'mail() returned false']);
         $pdo->prepare('DELETE FROM admin_password_resets WHERE admin_id = :id')->execute(['id' => $admin['id']]);

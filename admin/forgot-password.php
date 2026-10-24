@@ -22,7 +22,6 @@ try {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    reset_diag('password_reset_request_received');
     $submittedCsrf = $_POST['csrf_token'] ?? '';
     if (!is_string($submittedCsrf) || !hash_equals(csrf_token(), $submittedCsrf)) {
         reset_diag('password_reset_stopped_csrf_failed');
@@ -39,7 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             reset_diag('password_reset_stopped_rate_limited');
             $flash = ['type' => 'error', 'message' => 'Too many reset requests. Wait 15 minutes and try again.'];
         } else {
-            reset_diag('password_reset_validation_passed');
             record_login_failure($pdo, $limitKey, $ip);
             $admin = fixed_admin($pdo);
             if ($admin) {
