@@ -167,7 +167,7 @@ The footer shows a global, database-backed count of website **sessions** (one pe
 
 1. **Create the table (once).** phpMyAdmin → your database → **SQL** → run `database/upgrade-visit-counter.sql`. It is safe to re-run and never resets an existing count. (A fresh install already gets it from `schema.sql`.)
 2. **Deploy the files:** `includes/visit-counter.php`, `public-page.php`, `article.php`, and the `deploy/` folder (reference only).
-3. **Add the rewrite rules.** In File Manager open `public_html/.htaccess` (show hidden files), and **append** the contents of `deploy/visit-counter.htaccess` at the end, after any HTTPS-redirect rules. Do not replace the file. Without these rules the site works but the counter and footer total do not appear on the static pages.
+3. **Add the rewrite rules.** They now live in the repo as the root `.htaccess`, so a Git deploy installs them automatically. If your Hostinger deploy ever removes it, re-create `public_html/.htaccess` from `deploy/visit-counter.htaccess`. Without these rules the site works but the counter does not appear on the static pages.
 4. **Verify:** open `https://prasadnd.com/` in a private window; the footer should show `| Total Visits: N`. Reload and open other pages: N stays the same. Open a new private window: N increases by 1. Check in phpMyAdmin: `SELECT total FROM site_visit_counter;` matches the footer.
 5. Google Analytics is unchanged and independent; the two numbers will not match exactly.
 

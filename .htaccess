@@ -1,0 +1,12 @@
+# Visit counter: send public HTML pages through public-page.php so visits are counted
+# and the footer shows the stored total. If mod_rewrite is unavailable the site still works, without the counter.
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Home page
+RewriteRule ^$ /public-page.php?p=index [L,QSA]
+
+# Public static pages: /index.html, /beyond-work.html, /articles/*.html ...
+RewriteCond %{REQUEST_METHOD} =GET
+RewriteRule ^((?:articles/)?[A-Za-z0-9_-]+)\.html$ /public-page.php?p=$1 [L,QSA]
+</IfModule>
