@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!hash_equals((string) $config['admin_setup_token'], $setupToken)) {
         record_login_failure($pdo, '__initial_admin_setup__', $ip);
         $flash = ['type' => 'error', 'message' => 'Setup token is not valid.'];
-    } elseif (!preg_match('/^[A-Za-z0-9_.-]{3,80}$/', $username)) {
+    } elseif (!preg_match('/^[A-Za-z0-9_.@-]{3,80}$/', $username)) {
         $flash = ['type' => 'error', 'message' => 'Use 3 to 80 letters, numbers, dots, underscores, or hyphens for the username.'];
     } elseif (strlen($password) < 12) {
         $flash = ['type' => 'error', 'message' => 'Use a password with at least 12 characters.'];
