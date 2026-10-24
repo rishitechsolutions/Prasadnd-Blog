@@ -1,26 +1,8 @@
-# Frontend API Connection — Admin Removed
+# Article API Connection
 
-Note: the admin dashboard and backend server have been removed from this repository. The frontend currently serves static content and does not depend on any backend API by default.
+The portfolio pages remain static HTML/CSS/JavaScript. The Beyond Work page loads published article cards from the standalone PHP/PDO endpoint at `/api/articles.php`; the existing static cards and individual files under `articles/` remain unchanged.
 
-Summary:
-- The frontend uses static HTML/CSS/JS assets in this repo.
-- `api-config.js` defaults to `window.API_DISABLED = true` so no API calls are made.
+The article admin implementation is documented in `HOSTINGER_ARTICLE_ADMIN_SETUP.md`. It uses the private MySQL configuration file outside the web root and does not use the Laravel project under `backend/`.
 
-If you want to reconnect a backend API later:
-
-1. Deploy a compatible backend that exposes the public endpoints (for example `/api/public/settings`, `/api/public/social-links`, `/api/public/articles`).
-2. Update `api-config.js` to set `window.API_DISABLED = false` and set `window.API_BASE_URL` to your backend URL:
-
-```javascript
-window.API_DISABLED = false;
-window.API_BASE_URL = 'https://your-backend.example.com';
-```
-
-3. Ensure CORS is configured on the backend to allow your site origin.
-
-Notes for frontend developers:
-- `api-client.js` contains logic to fetch settings, social links, and articles when `window.API_DISABLED` is `false`.
-- The site is safe to host as a purely static site on Netlify or any static host.
-
-If you want, I can provide a short checklist to connect a new backend and safely re-enable dynamic content.
+The Laravel API and admin routes under `backend/` are separate legacy code and are not called by this integration. The root `article.html` is also an older Laravel API-driven page; new database-managed article links use `/article.php?slug=...` instead.
 

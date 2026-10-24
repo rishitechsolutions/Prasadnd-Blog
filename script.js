@@ -569,40 +569,51 @@ if (articleLightbox && articleImages.length > 0) {
     });
 })();
 
-// Latest Updates: Load the last 2 articles from Beyond Work
+// Latest Updates: Load the latest published articles from the portfolio API.
 (function loadLatestUpdates() {
     const grid = document.getElementById('latestUpdatesGrid');
     if (!grid) return;
 
-    const beyondWorkPath = path.includes('index.html') ? 'beyond-work.html' : 'beyond-work.html';
-    fetch(beyondWorkPath)
-        .then(r => r.text())
-        .then(html => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const items = doc.querySelectorAll('.beyond-article-item');
-            const latest = Array.from(items).slice(-2);
-            if (latest.length === 0) return;
+    const renderArticles = (articles) => {
+        const latest = Array.isArray(articles) ? articles.slice(0, 2) : [];
+        if (latest.length === 0) {
+            return;
+        }
 
-            grid.innerHTML = latest.map(item => {
-                const href = item.getAttribute('href') || '#';
-                const metaEl = item.querySelector('.article-meta');
-                const titleEl = item.querySelector('.beyond-article-content h4');
-                const excerptEl = item.querySelector('.beyond-article-excerpt');
-                const meta = metaEl ? metaEl.textContent.trim() : '';
-                const title = titleEl ? titleEl.textContent.trim() : '';
-                const excerpt = excerptEl ? excerptEl.textContent.trim() : '';
-                return `<article class="blog-item">
-                    <p class="blog-meta scroll-animate">${meta}</p>
-                    <h4 class="scroll-animate scroll-animate-delay-1">${title}</h4>
-                    <p class="blog-excerpt scroll-animate scroll-animate-delay-2">${excerpt}</p>
-                    <a href="${href}" class="read-more scroll-animate scroll-animate-delay-3">Read more</a>
-                </article>`;
-            }).join('');
+        const cards = latest.map(article => {
+            const card = document.createElement('article');
+            card.className = 'blog-item';
+            const date = article.published_at ? new Date(`${article.published_at.replace(' ', 'T')}Z`) : null;
+            const formattedDate = date && !Number.isNaN(date.valueOf())
+                ? date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })
+                : '';
+            const meta = document.createElement('p');
+            meta.className = 'blog-meta scroll-animate';
+            meta.textContent = `${article.category || 'Latest Update'}${formattedDate ? ` · ${formattedDate}` : ''}`;
+            const title = document.createElement('h4');
+            title.className = 'scroll-animate scroll-animate-delay-1';
+            title.textContent = article.title || 'Untitled Article';
+            const excerpt = document.createElement('p');
+            excerpt.className = 'blog-excerpt scroll-animate scroll-animate-delay-2';
+            excerpt.textContent = article.excerpt || 'Read more about this update.';
+            const link = document.createElement('a');
+            link.className = 'read-more scroll-animate scroll-animate-delay-3';
+            link.href = `/article.php?slug=${encodeURIComponent(article.slug)}`;
+            link.textContent = 'Read more';
+            card.append(meta, title, excerpt, link);
+            return card;
+        });
+        grid.replaceChildren(...cards);
 
-            // Re-init scroll animations for the new elements
-            if (typeof initScrollAnimations === 'function') initScrollAnimations();
+        if (typeof window.initScrollAnimations === 'function') window.initScrollAnimations();
+    };
+
+    fetch('/api/articles.php', { headers: { Accept: 'application/json' }, credentials: 'same-origin' })
+        .then(r => {
+            if (!r.ok) throw new Error('API unavailable');
+            return r.json();
         })
-        .catch(() => { /* Keep static fallback on fetch error */ });
+        .then(payload => renderArticles(payload.articles))
+        .catch(error => console.error('Could not load latest updates:', error));
 })();
 

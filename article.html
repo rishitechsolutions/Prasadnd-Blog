@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-G2XLKRXKPQ"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-G2XLKRXKPQ');
+        </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main class="article-detail-page">
+        <div class="container">
+            <a href="index.html" class="back-link">← Back to home</a>
+            <div id="articleContent" class="article-content"></div>
+        </div>
+    </main>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const slug = params.get('slug');
+        const container = document.getElementById('articleContent');
+
+        if (!slug) {
+            container.innerHTML = '<p>Article not found.</p>';
+        } else {
+            fetch('http://127.0.0.1:8000/api/articles/' + encodeURIComponent(slug), { headers: { Accept: 'application/json' } })
+                .then(response => {
+                    if (!response.ok) throw new Error('Article not found');
+                    return response.json();
+                })
+                .then(article => {
+                    document.title = article.title || 'Article';
+                    container.innerHTML = `
+                        <article class="article-card">
+                            <p class="article-meta">${article.category || 'Latest Update'}</p>
+                            <h1>${article.title || ''}</h1>
+                            <p class="article-excerpt">${article.short_description || ''}</p>
+                            ${article.featured_image ? `<img src="${article.featured_image}" alt="${article.title}" class="article-image">` : ''}
+                            <div class="article-body">${article.content || ''}</div>
+                        </article>
+                    `;
+                })
+                .catch(() => {
+                    container.innerHTML = '<p>Article not found.</p>';
+                });
+        }
+    </script>
+</body>
+</html>

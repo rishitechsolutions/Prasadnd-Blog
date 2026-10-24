@@ -24,12 +24,29 @@ A modern portfolio website with a split-screen layout (60% left content, 40% rig
 
 ## How to Use
 
+### Static frontend
 1. Open `index.html` in your web browser
 2. No build process required - it's a static website
 3. To customize:
    - Replace the placeholder image in the right panel (update the background-image in `.image-placeholder` in `styles.css`)
    - Modify content in `index.html`
    - Adjust colors and styling in `styles.css`
+
+### Laravel CMS backend
+This repository now also includes a Laravel backend in the `backend` folder for managing articles and exposing a public API.
+
+1. Open a terminal in the `backend` folder
+2. Start the API server:
+   ```bash
+   php artisan serve --host=127.0.0.1 --port=8000
+   ```
+3. Visit `/login` to sign in to the admin area
+4. After signing in, go to `/admin/articles` to create and publish articles
+5. Published articles will appear on the homepage and article detail page through the API
+
+### Local API endpoints
+- `http://127.0.0.1:8000/api/articles`
+- `http://127.0.0.1:8000/api/articles/{slug}`
 
 ## File Structure
 
