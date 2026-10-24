@@ -131,7 +131,7 @@ if ($article && !$isPreview && $statusCode === 200) {
                     <a href="beyond-work.html" class="article-back-link">← Back to Beyond Work</a>
                 </section>
             <?php endif; ?>
-            <footer class="footer"><div class="footer-content"><p class="footer-left">© Prasad ND 2026. All rights reserved.<?= visit_counter_footer_text() ?></p><p class="footer-right">Developed by: <a href="https://rishitechsolutions.in" rel="noopener noreferrer">Rishi Tech Solutions</a></p></div></footer>
+            <footer class="footer"><div class="footer-content"><p class="footer-left">© Prasad ND 2026. All rights reserved.<?= visit_counter_footer_text() ?></p><p class="footer-right">Developed by: <a href="https://rishidevapps.netlify.app/" rel="noopener noreferrer">Rishi Tech Solutions</a></p></div></footer>
         </main>
         <div class="right-image"><div class="image-placeholder" style="background-image: url('assets/beyond work.jpg');"></div></div>
     </div>
